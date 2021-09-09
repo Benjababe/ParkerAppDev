@@ -9,7 +9,7 @@ project/ios/Runner/AppDelegate.swift
 ```
 
 ## Prerequisites
-Before building the project, ensure all dependencies are installed locally first, run the following at the project folder
+Install [flutter](https://flutter.dev/docs/get-started/install) and before building the project, ensure all dependencies are installed locally first, run the following at the project folder
 
 ```
 flutter pub get
