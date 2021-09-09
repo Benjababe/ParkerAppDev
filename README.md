@@ -21,5 +21,8 @@ If you get any errors with building initially, try clearing all external files f
 flutter clean
 ```
 
+## Android Prerequisites
+If you're using an Android emulator to run the program, ensure that Google Play Services is installed else the Google Maps API won't work.
+
 ## Starting on the Project
 The project starts from the lib/main.dart file under its main() function. Try to keep each "screen" as its own separate .dart file and import them when needed.

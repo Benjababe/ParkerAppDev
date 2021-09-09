@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'constants.dart' as constants;
 
+// contains all the dumbass weebshit
 class BackendService {
   static const String AUTO_COMPLETE_URL =
       "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=:input:&components=country:sg&key=" +
