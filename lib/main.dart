@@ -1,40 +1,46 @@
 // external packages
+import 'package:location_permissions/location_permissions.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 // local files
 import 'search_page.dart';
+import 'backend.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Parker App',
-      // set default global theme for the app
-      theme: ThemeData(
-        primarySwatch: Colors.lightBlue,
-        canvasColor: Colors.white,
-        textTheme: TextTheme(
-          bodyText2: TextStyle(
-            color: Colors.white,
-            fontSize: 32,
+    return ChangeNotifierProvider(
+      create: (context) => BackendService(),
+      child: MaterialApp(
+        title: 'Parker App',
+        // set default global theme for the app
+        theme: ThemeData(
+          primarySwatch: Colors.lightBlue,
+          canvasColor: Colors.white,
+          textTheme: TextTheme(
+            bodyText2: TextStyle(
+              color: Colors.white,
+              fontSize: 32,
+            ),
           ),
-        ),
 
-        // default theme for elevated buttons, blue background white foreground
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            onPrimary: Colors.white,
-            primary: Colors.blue,
-            fixedSize: Size(300, 14),
+          // default theme for elevated buttons, blue background white foreground
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              onPrimary: Colors.white,
+              primary: Colors.blue,
+              fixedSize: Size(300, 14),
+            ),
           ),
         ),
+        home: MyHomePage(title: 'Parker'),
       ),
-      home: MyHomePage(title: 'Parker'),
     );
   }
 }
@@ -81,7 +87,8 @@ class _ParkerHome extends State<MyHomePage> {
     );
   }
 
-  void navigateToSearch() {
+  void navigateToSearch() async {
+    var status = await Permission.location.status;
     Navigator.push(
       context,
       MaterialPageRoute(

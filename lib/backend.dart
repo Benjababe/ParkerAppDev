@@ -1,32 +1,40 @@
 import 'dart:developer';
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'constants.dart' as constants;
 
 // contains all the dumbass weebshit
-class BackendService {
-  static const String AUTO_COMPLETE_URL =
+class BackendService with ChangeNotifier {
+  final String autoCompleteURL =
       "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=:input:&components=country:sg&key=" +
           constants.API_KEY;
 
-  static const String FIND_PLACE_ID_URL =
+  final String findPlaceIdURL =
       "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=:input:&inputtype=textquery&key=" +
           constants.API_KEY;
 
-  static const String GET_MARKER_BY_ID_URL =
+  final String GetMarkerByIdURL =
       "https://maps.googleapis.com/maps/api/place/details/json?place_id=:input:&key=" +
           constants.API_KEY;
 
+  List suggestions = [];
+  LatLng activeLocation = new LatLng(1.3418, 103.9480);
+  Set<Marker> markers = {};
+
   // returns a list of up to 5 json objects with keys "bold" and "rem" indicating which
   // part of the text is to be bolded
-  static Future<List> getSuggestions(String query) async {
-    if (query == "")
-      return List.generate(0, (index) => {"bold": "", "rem": ""});
+  void getSuggestions(String query) async {
+    if (query == "") {
+      suggestions = [];
+      notifyListeners();
+      return;
+    }
 
-    String url = AUTO_COMPLETE_URL.replaceAll(":input:", query);
+    String url = autoCompleteURL.replaceAll(":input:", query);
     Uri uri = Uri.parse(url);
     Response res = await post(uri);
 
@@ -47,7 +55,7 @@ class BackendService {
     }
     log("\n");
 
-    return List.generate(predictions.length, (i) {
+    suggestions = List.generate(predictions.length, (i) {
       String result = results[i];
       int matchLen = matches[i];
       return {
@@ -55,13 +63,20 @@ class BackendService {
         'bold': result.substring(0, matchLen),
         // characters to be displayed normally
         'rem': result.substring(matchLen, result.length),
+        'text': result,
       };
     });
+    notifyListeners();
   }
 
-  static Future<LatLng> searchMap(String search) async {
+  void clearSuggestions() {
+    suggestions = [];
+    notifyListeners();
+  }
+
+  searchMap(String search) async {
     double lat = 0, lng = 0;
-    String url = FIND_PLACE_ID_URL.replaceAll(":input:", search);
+    String url = findPlaceIdURL.replaceAll(":input:", search);
     Uri uri = Uri.parse(url);
     Response res = await post(uri);
 
@@ -71,7 +86,7 @@ class BackendService {
       Map candidate = data["candidates"][0];
       String placeID = candidate["place_id"];
 
-      url = GET_MARKER_BY_ID_URL.replaceAll(":input:", placeID);
+      url = GetMarkerByIdURL.replaceAll(":input:", placeID);
       uri = Uri.parse(url);
       res = await post(uri);
       data = jsonDecode(res.body);
@@ -82,6 +97,10 @@ class BackendService {
       lng = location["lng"];
     }
 
-    return LatLng(lat, lng);
+    activeLocation = LatLng(lat, lng);
+    markers.clear();
+    markers
+        .add(Marker(markerId: MarkerId("marker_0"), position: activeLocation));
+    notifyListeners();
   }
 }
