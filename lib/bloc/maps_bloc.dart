@@ -31,14 +31,15 @@ class BackendService with ChangeNotifier {
       "+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs ";
 
   List suggestions = [];
-  LatLng activeLocation = new LatLng(1.3418, 103.9480);
+  LatLng activeLocation = new LatLng(0, 0);
   Set<Marker> markers = {};
   int markerCount = 0;
 
   Map<String, Map<String, String>> carkparkLots = new Map();
 
   // populates markers with carpark markers
-  void readCarparkLocation() async {
+  Future<void> readCarparkLocation() async {
+    print("Finding carparks...");
     await getLiveLots();
     BitmapDescriptor customIcon = await getCustomIcon();
 
@@ -50,6 +51,8 @@ class BackendService with ChangeNotifier {
     String s = await rootBundle.loadString(jsonPath);
     Map data = await json.decode(s);
 
+    // loop through all records of static carpark locations
+    // and give each a marker with its own infowindow
     for (String carparkNo in data.keys) {
       Map record = data[carparkNo];
       double x = double.parse(record["x_coord"]);
@@ -59,10 +62,9 @@ class BackendService with ChangeNotifier {
       if (!this.carkparkLots.keys.contains(carparkNo)) continue;
 
       Point carparkPt = new Point(x: x, y: y);
+      Point latlng = projSrc.transform(projDst, carparkPt);
 
-      var latlng = projSrc.transform(projDst, carparkPt);
-
-      MarkerId id = MarkerId("marker_id_" + markerCount.toString());
+      MarkerId id = MarkerId("marker_id_" + (markerCount++).toString());
       Marker cpMarker = Marker(
         markerId: id,
         icon: customIcon,
@@ -80,9 +82,7 @@ class BackendService with ChangeNotifier {
         ),
       );
       markers.add(cpMarker);
-      markerCount++;
     }
-
     notifyListeners();
   }
 
@@ -165,6 +165,7 @@ class BackendService with ChangeNotifier {
         'bold': result.substring(0, matchLen),
         // characters to be displayed normally
         'rem': result.substring(matchLen, result.length),
+        // full string of location
         'text': result,
       };
     });
@@ -206,7 +207,11 @@ class BackendService with ChangeNotifier {
       },
     );
     markers.add(
-        Marker(markerId: MarkerId("marker_search"), position: activeLocation));
+      Marker(
+        markerId: MarkerId("marker_search"),
+        position: activeLocation,
+      ),
+    );
     notifyListeners();
   }
 }

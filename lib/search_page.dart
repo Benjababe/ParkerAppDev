@@ -1,9 +1,10 @@
 import 'dart:async';
 
-import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 
 import 'bloc/maps_bloc.dart';
 
@@ -20,7 +21,12 @@ class _SearchPageState extends State<SearchPage> {
 
   // listview starts as hidden, you are able to scroll the map freely
   // use a variable for height as it overlays the map widget
-  double suggestionHeight = 0, mapZoom = 16.5;
+  double suggestionHeight = 0, _mapZoom = 16.5;
+
+  // dark theme for maps
+  String _mapStyle = "";
+
+  var _backend;
 
   void toggleListView(bool status) {
     setState(() {
@@ -29,15 +35,29 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    // sets current camera to user location
+    getCurrentLocation();
+
+    // retrieves map style from assets
+    rootBundle.loadString("assets/map_style.json").then((style) {
+      this._mapStyle = style;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     // initialisation of backend class
-    final backend = Provider.of<BackendService>(context);
+    this._backend = Provider.of<BackendService>(context, listen: true);
 
     // what a fucking abomination of design
     return Scaffold(
       backgroundColor: Colors.black,
       body: Center(
         child: ListView(
+          // prevent scrolling because of map
           physics: NeverScrollableScrollPhysics(),
           children: [
             Container(
@@ -52,11 +72,11 @@ class _SearchPageState extends State<SearchPage> {
                     suffixIcon: Icon(Icons.search),
                   ),
                   onChanged: (String query) {
-                    backend.getSuggestions(query);
+                    this._backend.getSuggestions(query);
                     // show suggestion listview
                     toggleListView(true);
                   },
-                  onTap: backend.clearSuggestions,
+                  onTap: () => toggleListView(true),
                 ),
               ),
             ),
@@ -66,27 +86,31 @@ class _SearchPageState extends State<SearchPage> {
                   height: 590,
                   child: GoogleMap(
                     mapType: MapType.normal,
+                    myLocationButtonEnabled: true,
+                    myLocationEnabled: true,
                     initialCameraPosition: CameraPosition(
                       target: new LatLng(0, 0),
-                      zoom: mapZoom,
+                      zoom: _mapZoom,
                     ),
-                    onMapCreated: (GoogleMapController controller) {
+                    onMapCreated: (GoogleMapController controller) async {
                       if (!_mapController.isCompleted) {
-                        // sets current camera to user location
-                        getCurrentLocation();
+                        // populates map with carpark markers
+                        this._backend.readCarparkLocation();
+                        controller.setMapStyle(this._mapStyle);
                         _mapController.complete(controller);
-                        // populates map with carpark markers on creation
-                        backend.readCarparkLocation();
                       }
                     },
-                    markers: backend.markers,
+                    markers: this._backend.markers,
                     onTap: (LatLng pos) {
                       // make map the focus (hides soft keyboard)
                       FocusScope.of(context).requestFocus(new FocusNode());
+
+                      // hides suggestion listview
+                      toggleListView(false);
                     },
                   ),
                 ),
-                if (backend.suggestions.length > 0)
+                if (this._backend.suggestions.length > 0)
                   Container(
                     height: suggestionHeight,
                     width: double.infinity,
@@ -98,8 +122,9 @@ class _SearchPageState extends State<SearchPage> {
                 Container(
                   height: suggestionHeight,
                   child: ListView.builder(
+                    // prevent scrolling because of map
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: backend.suggestions.length,
+                    itemCount: this._backend.suggestions.length,
                     itemBuilder: (context, index) {
                       return ListTile(
                         title: RichText(
@@ -109,20 +134,21 @@ class _SearchPageState extends State<SearchPage> {
                               ),
                               children: <TextSpan>[
                                 TextSpan(
-                                  text: backend.suggestions[index]["bold"],
+                                  text: this._backend.suggestions[index]
+                                      ["bold"],
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 TextSpan(
-                                  text: backend.suggestions[index]["rem"],
+                                  text: this._backend.suggestions[index]["rem"],
                                 ),
                               ]),
                         ),
                         onTap: () {
                           // makes listview the focus (hides soft keyboard)
                           FocusScope.of(context).requestFocus(new FocusNode());
-                          suggestionTap(backend, index);
+                          suggestionTap(this._backend, index);
                         },
                       );
                     },
@@ -162,7 +188,7 @@ class _SearchPageState extends State<SearchPage> {
     CameraUpdate newCam = CameraUpdate.newCameraPosition(
       CameraPosition(
         target: pos,
-        zoom: mapZoom,
+        zoom: _mapZoom,
       ),
     );
     GoogleMapController controller = await _mapController.future;
