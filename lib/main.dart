@@ -1,6 +1,6 @@
 // external packages
+import 'package:geolocator/geolocator.dart';
 import 'package:location_permissions/location_permissions.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
@@ -74,7 +74,24 @@ class _ParkerHome extends State<MyHomePage> {
             ElevatedButton.icon(
               icon: Icon(Icons.search, size: 16),
               label: Text('Search'),
-              onPressed: () => navigateToSearch(),
+              onPressed: () async {
+                var error = await navigateToSearch();
+                // pops up error message if navigate function returns non null string
+                if (error != null) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                        title: new Text("Location Permission Issue"),
+                        content: new Text(error),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, "Cancel"),
+                            child: Text("Cancel"),
+                          ),
+                        ]),
+                  );
+                }
+              },
             ),
             ElevatedButton.icon(
               icon: Icon(Icons.bookmark_outline, size: 16),
@@ -87,8 +104,25 @@ class _ParkerHome extends State<MyHomePage> {
     );
   }
 
-  void navigateToSearch() async {
-    //var status = await Permission.location.status;
+  dynamic navigateToSearch() async {
+    bool locationEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!locationEnabled)
+      return "Location services disabled, please enable location services on your smartphone";
+
+    int count = 0;
+    LocationPermission permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.deniedForever)
+      return "Permission denied forever, please enable permission for app to work properly";
+
+    while (permission == LocationPermission.denied) {
+      if (count >= 3)
+        return "Permissions denied multiple times, please allow location permissions for app to work properly";
+      await LocationPermissions().requestPermissions();
+      permission = await Geolocator.checkPermission();
+      count++;
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(

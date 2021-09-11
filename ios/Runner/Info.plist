@@ -43,5 +43,7 @@
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Parker requires location permissions to run properly</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Parker requires access to location when in the background.</string>
 </dict>
 </plist>

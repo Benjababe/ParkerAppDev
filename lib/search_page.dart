@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 
 import 'bloc/maps_bloc.dart';
 
@@ -19,7 +20,7 @@ class _SearchPageState extends State<SearchPage> {
 
   // listview starts as hidden, you are able to scroll the map freely
   // use a variable for height as it overlays the map widget
-  double suggestionHeight = 0;
+  double suggestionHeight = 0, mapZoom = 16.5;
 
   void toggleListView(bool status) {
     setState(() {
@@ -65,10 +66,9 @@ class _SearchPageState extends State<SearchPage> {
                   height: 590,
                   child: GoogleMap(
                     mapType: MapType.normal,
-                    myLocationEnabled: true,
                     initialCameraPosition: CameraPosition(
                       target: new LatLng(1.3418, 103.9480),
-                      zoom: 16,
+                      zoom: mapZoom,
                     ),
                     onMapCreated: (GoogleMapController controller) {
                       if (!_mapController.isCompleted) {
@@ -151,7 +151,7 @@ class _SearchPageState extends State<SearchPage> {
       CameraUpdate.newCameraPosition(
         CameraPosition(
           target: backend.activeLocation,
-          zoom: 15,
+          zoom: mapZoom,
         ),
       ),
     );

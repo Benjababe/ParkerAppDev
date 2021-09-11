@@ -40,6 +40,7 @@ class BackendService with ChangeNotifier {
   // populates markers with carpark markers
   void readCarparkLocation() async {
     await getLiveLots();
+    BitmapDescriptor customIcon = await getCustomIcon();
 
     // projections for converting EPSG:3414 (SG Coordinates) to EPSG:4326 (Lat Lng)
     Projection projSrc = Projection.add("EPSG:3414", def);
@@ -55,7 +56,7 @@ class BackendService with ChangeNotifier {
       double y = double.parse(record["y_coord"]);
 
       // if there is no data on carpark lots for this marker, skip
-      if (!carkparkLots.keys.contains(carparkNo)) continue;
+      if (!this.carkparkLots.keys.contains(carparkNo)) continue;
 
       Point carparkPt = new Point(x: x, y: y);
 
@@ -64,15 +65,16 @@ class BackendService with ChangeNotifier {
       MarkerId id = MarkerId("marker_id_" + markerCount.toString());
       Marker cpMarker = Marker(
         markerId: id,
+        icon: customIcon,
         position: LatLng(latlng.y, latlng.x),
         infoWindow: InfoWindow(
           title: record["address"],
           snippet: "Lots Available: " +
-              carkparkLots[carparkNo]!["lotsAvailable"]! +
+              this.carkparkLots[carparkNo]!["lotsAvailable"]! +
               "\nTotal Lots: " +
-              carkparkLots[carparkNo]!["lotsTotal"]! +
+              this.carkparkLots[carparkNo]!["lotsTotal"]! +
               "\nLast Updated: " +
-              carkparkLots[carparkNo]!["lastUpdate"]! +
+              this.carkparkLots[carparkNo]!["lastUpdate"]! +
               "\nType: " +
               record["car_park_type"],
         ),
@@ -95,12 +97,18 @@ class BackendService with ChangeNotifier {
       String cpNum = carpark["carpark_number"];
       Map cpInfo = carpark["carpark_info"][0];
 
-      carkparkLots[cpNum] = {
+      this.carkparkLots[cpNum] = {
         "lastUpdate": carpark["update_datetime"],
         "lotsAvailable": cpInfo["lots_available"],
         "lotsTotal": cpInfo["total_lots"],
       };
     }
+  }
+
+  Future<BitmapDescriptor> getCustomIcon() async {
+    BitmapDescriptor icon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(), "assets/parking_logo.png");
+    return icon;
   }
 
   // returns a list of up to 5 json objects with keys "bold" and "rem" indicating which
