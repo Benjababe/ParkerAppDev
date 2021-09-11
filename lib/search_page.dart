@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'backend.dart';
+import 'bloc/maps_bloc.dart';
 
 class SearchPage extends StatefulWidget {
   SearchPage({Key? key}) : super(key: key);
@@ -17,7 +17,8 @@ class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   Completer<GoogleMapController> _mapController = Completer();
 
-  // listview starts as hidden, you are able to scroll the map  freely
+  // listview starts as hidden, you are able to scroll the map freely
+  // use a variable for height as it overlays the map widget
   double suggestionHeight = 0;
 
   void toggleListView(bool status) {
@@ -70,9 +71,17 @@ class _SearchPageState extends State<SearchPage> {
                       zoom: 16,
                     ),
                     onMapCreated: (GoogleMapController controller) {
-                      _mapController.complete(controller);
+                      if (!_mapController.isCompleted) {
+                        _mapController.complete(controller);
+                        // populates map with carpark markers on creation
+                        backend.readCarparkLocation();
+                      }
                     },
                     markers: backend.markers,
+                    onTap: (LatLng pos) {
+                      // make map the focus (hides soft keyboard)
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                    },
                   ),
                 ),
                 if (backend.suggestions.length > 0)
@@ -91,47 +100,58 @@ class _SearchPageState extends State<SearchPage> {
                     itemCount: backend.suggestions.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                          title: RichText(
-                            text: TextSpan(
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                                children: <TextSpan>[
-                                  TextSpan(
-                                    text: backend.suggestions[index]["bold"],
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: backend.suggestions[index]["rem"],
-                                  ),
-                                ]),
-                          ),
-                          onTap: () async {
-                            _searchController.text =
-                                backend.suggestions[index]["text"];
-                            backend.clearSuggestions();
-                            // hide suggestion listview
-                            toggleListView(false);
-                            await backend.searchMap(_searchController.text);
-                            GoogleMapController controller =
-                                await _mapController.future;
-                            controller.moveCamera(
-                              CameraUpdate.newCameraPosition(
-                                CameraPosition(
-                                  target: backend.activeLocation,
-                                  zoom: 15,
-                                ),
+                        title: RichText(
+                          text: TextSpan(
+                              style: TextStyle(
+                                color: Colors.white,
                               ),
-                            );
-                          });
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: backend.suggestions[index]["bold"],
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: backend.suggestions[index]["rem"],
+                                ),
+                              ]),
+                        ),
+                        onTap: () {
+                          // makes listview the focus (hides soft keyboard)
+                          FocusScope.of(context).requestFocus(new FocusNode());
+                          suggestionTap(backend, index);
+                        },
+                      );
                     },
                   ),
                 ),
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void suggestionTap(BackendService backend, int index) async {
+    // set text in search textfield to suggestion text
+    _searchController.text = backend.suggestions[index]["text"];
+
+    // hide suggestion listview
+    backend.clearSuggestions();
+    toggleListView(false);
+
+    // gets latlng of suggestion
+    await backend.searchMap(_searchController.text);
+
+    // pans camera to latlng of above
+    GoogleMapController controller = await _mapController.future;
+    controller.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: backend.activeLocation,
+          zoom: 15,
         ),
       ),
     );

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 // local files
 import 'search_page.dart';
-import 'backend.dart';
+import 'bloc/maps_bloc.dart';
 
 void main() {
   runApp(MyApp());
@@ -88,7 +88,7 @@ class _ParkerHome extends State<MyHomePage> {
   }
 
   void navigateToSearch() async {
-    var status = await Permission.location.status;
+    //var status = await Permission.location.status;
     Navigator.push(
       context,
       MaterialPageRoute(
