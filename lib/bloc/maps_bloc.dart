@@ -26,7 +26,7 @@ class BackendService with ChangeNotifier {
   final String getLotsURL =
       "https://api.data.gov.sg/v1/transport/carpark-availability?date_time=2021-09-11T10:57:00";
 
-  // definiation for EPSG:3414 (SG)
+  // definition for EPSG:3414 (SG)
   final String def =
       "+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs ";
 
@@ -41,24 +41,21 @@ class BackendService with ChangeNotifier {
   void readCarparkLocation() async {
     await getLiveLots();
 
-    // TODO fetch all static locations and compile into a single file
-    // do it via external node or python script
-    String jsonPath = "assets/carpark_static_location.json";
+    // projections for converting EPSG:3414 (SG Coordinates) to EPSG:4326 (Lat Lng)
+    Projection projSrc = Projection.add("EPSG:3414", def);
+    Projection projDst = Projection.get("EPSG:4326")!;
+
+    String jsonPath = "assets/carpark_static_data.json";
     String s = await rootBundle.loadString(jsonPath);
-    Map data = await json.decode(s)["result"];
+    Map data = await json.decode(s);
 
-    List records = data["records"];
-
-    var projSrc = Projection.add("EPSG:3414", def);
-    var projDst = Projection.get("EPSG:4326")!;
-
-    for (Map record in records) {
+    for (String carparkNo in data.keys) {
+      Map record = data[carparkNo];
       double x = double.parse(record["x_coord"]);
       double y = double.parse(record["y_coord"]);
-      String cpNum = record["car_park_no"];
 
       // if there is no data on carpark lots for this marker, skip
-      if (!carkparkLots.keys.contains(cpNum)) continue;
+      if (!carkparkLots.keys.contains(carparkNo)) continue;
 
       Point carparkPt = new Point(x: x, y: y);
 
@@ -71,11 +68,11 @@ class BackendService with ChangeNotifier {
         infoWindow: InfoWindow(
           title: record["address"],
           snippet: "Lots Available: " +
-              carkparkLots[cpNum]!["lotsAvailable"]! +
+              carkparkLots[carparkNo]!["lotsAvailable"]! +
               "\nTotal Lots: " +
-              carkparkLots[cpNum]!["lotsTotal"]! +
+              carkparkLots[carparkNo]!["lotsTotal"]! +
               "\nLast Updated: " +
-              carkparkLots[cpNum]!["lastUpdate"]! +
+              carkparkLots[carparkNo]!["lastUpdate"]! +
               "\nType: " +
               record["car_park_type"],
         ),
