@@ -24,7 +24,7 @@ class BackendService with ChangeNotifier {
           constants.API_KEY;
 
   final String getLotsURL =
-      "https://api.data.gov.sg/v1/transport/carpark-availability?date_time=2021-09-11T10:57:00";
+      "https://api.data.gov.sg/v1/transport/carpark-availability?date_time=:input:";
 
   // definition for EPSG:3414 (SG)
   final String def =
@@ -86,9 +86,25 @@ class BackendService with ChangeNotifier {
     notifyListeners();
   }
 
+  // follows format: YYYY-MM-DDTHH:MM:SS
+  String getCurrentDateTime() {
+    String datetime = "";
+    DateTime dt = DateTime.now();
+
+    datetime += dt.year.toString() + "-";
+    datetime += ((dt.month < 10) ? "0" : "") + dt.month.toString() + "-";
+    datetime += ((dt.day < 10) ? "0" : "") + dt.day.toString() + "T";
+    datetime += ((dt.hour < 10) ? "0" : "") + dt.hour.toString() + ":";
+    datetime += ((dt.minute < 10) ? "0" : "") + dt.minute.toString() + ":";
+    datetime += ((dt.second < 10) ? "0" : "") + dt.second.toString();
+
+    return datetime;
+  }
+
   // populates carparkLots Map before adding markers
   Future<void> getLiveLots() async {
-    Uri uri = Uri.parse(getLotsURL);
+    String datetime = getCurrentDateTime();
+    Uri uri = Uri.parse(getLotsURL.replaceAll(":input:", datetime));
     Response res = await get(uri);
     Map data = jsonDecode(res.body)["items"][0];
     List carparkData = data["carpark_data"];

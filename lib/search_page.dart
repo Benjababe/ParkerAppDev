@@ -67,11 +67,13 @@ class _SearchPageState extends State<SearchPage> {
                   child: GoogleMap(
                     mapType: MapType.normal,
                     initialCameraPosition: CameraPosition(
-                      target: new LatLng(1.3418, 103.9480),
+                      target: new LatLng(0, 0),
                       zoom: mapZoom,
                     ),
                     onMapCreated: (GoogleMapController controller) {
                       if (!_mapController.isCompleted) {
+                        // sets current camera to user location
+                        getCurrentLocation();
                         _mapController.complete(controller);
                         // populates map with carpark markers on creation
                         backend.readCarparkLocation();
@@ -146,14 +148,27 @@ class _SearchPageState extends State<SearchPage> {
     await backend.searchMap(_searchController.text);
 
     // pans camera to latlng of above
-    GoogleMapController controller = await _mapController.future;
-    controller.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: backend.activeLocation,
-          zoom: mapZoom,
-        ),
+    moveCamera(backend.activeLocation, animate: true);
+  }
+
+  void getCurrentLocation() async {
+    Position pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    LatLng currentPos = new LatLng(pos.latitude, pos.longitude);
+    moveCamera(currentPos);
+  }
+
+  void moveCamera(LatLng pos, {bool animate = false}) async {
+    CameraUpdate newCam = CameraUpdate.newCameraPosition(
+      CameraPosition(
+        target: pos,
+        zoom: mapZoom,
       ),
     );
+    GoogleMapController controller = await _mapController.future;
+    if (animate)
+      controller.animateCamera(newCam);
+    else
+      controller.moveCamera(newCam);
   }
 }
