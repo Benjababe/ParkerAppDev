@@ -47,3 +47,5 @@ app.*.map.json
 
 # Private information
 lib/static/constants.dart
+ios/Runner/AppDelegate.swift
+android/app/src/main/AndroidManifest.xml
