@@ -31,6 +31,7 @@
 .pub/
 /build/
 
+
 # Web related
 lib/generated_plugin_registrant.dart
 
@@ -45,7 +46,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Private information
-lib/static/constants.dart
-ios/Runner/AppDelegate.swift
-android/app/src/main/AndroidManifest.xml
+/android/app/src/main/AndroidManifest.xml
+/ios/Runner/AppDelegate.swift
+/lib/static/constants.dart
