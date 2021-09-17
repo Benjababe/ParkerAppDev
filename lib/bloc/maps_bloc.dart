@@ -5,25 +5,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:proj4dart/proj4dart.dart';
 
 import '../static/constants.dart' as constants;
 
 // class will notify main function on changes through notifyListeners()
 class BackendService with ChangeNotifier {
-  final String autoCompleteURL =
+  final String _autoCompleteURL =
       "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=:input:&components=country:sg&key=" +
           constants.API_KEY;
 
-  final String findPlaceIdURL =
+  final String _findPlaceIdURL =
       "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=:input:&inputtype=textquery&key=" +
           constants.API_KEY;
 
-  final String getMarkerByIdURL =
+  final String _getMarkerByIdURL =
       "https://maps.googleapis.com/maps/api/place/details/json?place_id=:input:&key=" +
           constants.API_KEY;
 
-  final String getLotsURL =
+  final String _getLotsURL =
       "https://api.data.gov.sg/v1/transport/carpark-availability?date_time=:input:";
 
   // definition for EPSG:3414 (SG)
@@ -34,56 +33,20 @@ class BackendService with ChangeNotifier {
   LatLng activeLocation = new LatLng(0, 0);
   Set<Marker> markers = {};
   int markerCount = 0;
+  late BitmapDescriptor customIcon;
 
   Map<String, Map<String, String>> carkparkLots = new Map();
 
   // populates markers with carpark markers
-  Future<void> readCarparkLocation() async {
-    print("Finding carparks...");
+  Future<Map> readCarparkLocation() async {
     await getLiveLots();
-    BitmapDescriptor customIcon = await getCustomIcon();
-
-    // projections for converting EPSG:3414 (SG Coordinates) to EPSG:4326 (Lat Lng)
-    Projection projSrc = Projection.add("EPSG:3414", def);
-    Projection projDst = Projection.get("EPSG:4326")!;
+    customIcon = await getCustomIcon();
 
     String jsonPath = "assets/carpark_static_data.json";
     String s = await rootBundle.loadString(jsonPath);
     Map data = await json.decode(s);
 
-    // loop through all records of static carpark locations
-    // and give each a marker with its own infowindow
-    for (String carparkNo in data.keys) {
-      Map record = data[carparkNo];
-      double x = double.parse(record["x_coord"]);
-      double y = double.parse(record["y_coord"]);
-
-      // if there is no data on carpark lots for this marker, skip
-      if (!this.carkparkLots.keys.contains(carparkNo)) continue;
-
-      Point carparkPt = new Point(x: x, y: y);
-      Point latlng = projSrc.transform(projDst, carparkPt);
-
-      MarkerId id = MarkerId("marker_id_" + (markerCount++).toString());
-      Marker cpMarker = Marker(
-        markerId: id,
-        icon: customIcon,
-        position: LatLng(latlng.y, latlng.x),
-        infoWindow: InfoWindow(
-          title: record["address"],
-          snippet: "Lots Available: " +
-              this.carkparkLots[carparkNo]!["lotsAvailable"]! +
-              "\nTotal Lots: " +
-              this.carkparkLots[carparkNo]!["lotsTotal"]! +
-              "\nLast Updated: " +
-              this.carkparkLots[carparkNo]!["lastUpdate"]! +
-              "\nType: " +
-              record["car_park_type"],
-        ),
-      );
-      markers.add(cpMarker);
-    }
-    notifyListeners();
+    return data;
   }
 
   // follows format: YYYY-MM-DDTHH:MM:SS
@@ -101,10 +64,11 @@ class BackendService with ChangeNotifier {
     return datetime;
   }
 
+  // could be optimised by doing on a server instead of on a phone
   // populates carparkLots Map before adding markers
   Future<void> getLiveLots() async {
     String datetime = getCurrentDateTime();
-    Uri uri = Uri.parse(getLotsURL.replaceAll(":input:", datetime));
+    Uri uri = Uri.parse(_getLotsURL.replaceAll(":input:", datetime));
     Response res = await get(uri);
     Map data = jsonDecode(res.body)["items"][0];
     List carparkData = data["carpark_data"];
@@ -136,7 +100,7 @@ class BackendService with ChangeNotifier {
       return;
     }
 
-    String url = autoCompleteURL.replaceAll(":input:", query);
+    String url = _autoCompleteURL.replaceAll(":input:", query);
     Uri uri = Uri.parse(url);
     Response res = await post(uri);
 
@@ -177,9 +141,9 @@ class BackendService with ChangeNotifier {
     notifyListeners();
   }
 
-  searchMap(String search) async {
+  Future<void> searchMap(String search) async {
     double lat = 0, lng = 0;
-    String url = findPlaceIdURL.replaceAll(":input:", search);
+    String url = _findPlaceIdURL.replaceAll(":input:", search);
     Uri uri = Uri.parse(url);
     Response res = await post(uri);
 
@@ -189,7 +153,7 @@ class BackendService with ChangeNotifier {
       Map candidate = data["candidates"][0];
       String placeID = candidate["place_id"];
 
-      url = getMarkerByIdURL.replaceAll(":input:", placeID);
+      url = _getMarkerByIdURL.replaceAll(":input:", placeID);
       uri = Uri.parse(url);
       res = await post(uri);
       data = jsonDecode(res.body);
@@ -214,4 +178,6 @@ class BackendService with ChangeNotifier {
     );
     notifyListeners();
   }
+
+  void getRoute() async {}
 }

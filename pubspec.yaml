@@ -36,6 +36,7 @@ dependencies:
   permission_handler: ^8.1.6
   proj4dart: ^2.0.0
   geolocator: ^7.6.0
+  url_launcher: ^6.0.10
 
 dev_dependencies:
   flutter_test:

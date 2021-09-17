@@ -14,6 +14,26 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  final ThemeData appTheme = ThemeData(
+    primarySwatch: Colors.lightBlue,
+    canvasColor: Colors.white,
+    textTheme: TextTheme(
+      bodyText2: TextStyle(
+        color: Colors.white,
+        fontSize: 32,
+      ),
+    ),
+
+    // default theme for elevated buttons, blue background white foreground
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        onPrimary: Colors.white,
+        primary: Colors.blue,
+        fixedSize: Size(300, 14),
+      ),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -21,25 +41,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Parker App',
         // set default global theme for the app
-        theme: ThemeData(
-          primarySwatch: Colors.lightBlue,
-          canvasColor: Colors.white,
-          textTheme: TextTheme(
-            bodyText2: TextStyle(
-              color: Colors.white,
-              fontSize: 32,
-            ),
-          ),
-
-          // default theme for elevated buttons, blue background white foreground
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              onPrimary: Colors.white,
-              primary: Colors.blue,
-              fixedSize: Size(300, 14),
-            ),
-          ),
-        ),
+        theme: appTheme,
         home: MyHomePage(title: 'Parker'),
       ),
     );
@@ -96,7 +98,7 @@ class _ParkerHome extends State<MyHomePage> {
                                 openAppSettings();
                                 Navigator.pop(context, "OK");
                               },
-                              child: Text("OK"),
+                              child: Text("Open Settings"),
                             ),
                           TextButton(
                             onPressed: () => Navigator.pop(context, "Cancel"),
