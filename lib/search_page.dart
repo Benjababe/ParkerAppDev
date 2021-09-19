@@ -29,13 +29,22 @@ class _SearchPageState extends State<SearchPage> {
 
   // dark theme for maps
   String _mapStyle = "",
+      // title for custom InfoWindow
       _infoWindowTitle = "Hello world",
+      // carpark info in custom InfoWindow
       _infoWindowText = "",
+      // associated carpark no. for custom InfoWindow
       _infoCPNo = "";
 
-  // is active parking lot available
-  bool _activeAvailable = false, _infoWindowBookmarked = false;
+  // position of current carpark associated with custom InfoWindow
+  late LatLng _activeLatLng;
 
+  // whether there are available lots for current carpark associated with custom InfoWindow
+  bool _activeAvailable = false,
+      // whether current carpark associated with custom InfoWindow is bookmarked
+      _infoWindowBookmarked = false;
+
+  // set SharedPreferences to be global, bypass await in non UI methods
   late SharedPreferences _prefs;
 
   // definition for EPSG:3414 (SG)
@@ -43,8 +52,6 @@ class _SearchPageState extends State<SearchPage> {
       "+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs ";
 
   late BackendService _backend;
-
-  late LatLng _activeLocation;
 
   void toggleListView(bool status) {
     setState(() {
@@ -129,6 +136,7 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
+  // returns a GoogleMap object which will be displayed in UI
   GoogleMap generateParkerMap() {
     return GoogleMap(
       mapType: MapType.normal,
@@ -164,6 +172,7 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
+  // returns a ListView object which will be displayed in UI
   ListView generateSuggestionLV() {
     return ListView.builder(
       // prevent scrolling because of map
@@ -199,6 +208,7 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
+  // returns the custom InfoWindow which will be displayed in UI
   AnimatedPositioned generateInfoWindow() {
     return AnimatedPositioned(
       bottom: _infoWindowPos,
@@ -303,9 +313,10 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
+  // opens directions in maps app
   void openDirections() async {
     // TODO iOS untested
-    double lat = _activeLocation.latitude, lng = _activeLocation.longitude;
+    double lat = _activeLatLng.latitude, lng = _activeLatLng.longitude;
     if (Platform.isAndroid || Platform.isIOS) {
       Uri uri = (Platform.isAndroid)
           ? Uri.parse("google.navigation:q=$lat,$lng&mode=d")
@@ -319,18 +330,21 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
+  // either sets/unsets bookmark in local storage and updates UI accordingly
   void bookmarkMarker() async {
-    List<String>? bookmarks = _prefs.getStringList("bookmarks");
+    // retrieves bookmark list from storage
+    List<String> bookmarks = _prefs.getStringList("bookmarks")!;
 
-    if (bookmarks == null) bookmarks = [];
-
+    // toggles bookmark from list
     if (!bookmarks.contains(_infoCPNo))
       bookmarks.add(_infoCPNo);
     else
       bookmarks.remove(_infoCPNo);
 
+    // stores bookmark list to storage
     _prefs.setStringList("bookmarks", bookmarks);
 
+    // updates UI
     setState(() {
       _infoWindowBookmarked = !_infoWindowBookmarked;
     });
@@ -340,11 +354,15 @@ class _SearchPageState extends State<SearchPage> {
     // get local storage variables
     _prefs = await SharedPreferences.getInstance();
 
+    // initialises empty list and stores if null
     List<String>? bookmarks = _prefs.getStringList("bookmarks");
-    if (bookmarks == null) bookmarks = [];
-    _prefs.setStringList("bookmarks", bookmarks);
+    if (bookmarks == null) {
+      bookmarks = [];
+      _prefs.setStringList("bookmarks", bookmarks);
+    }
   }
 
+  // populate markers in backend object
   void addMarkers(Map data) async {
     // projections for converting coordinates
     Projection projSrc = Projection.add("EPSG:3414", def);
@@ -360,22 +378,24 @@ class _SearchPageState extends State<SearchPage> {
       // if there is no data on carpark lots for this marker, skip
       if (!_backend.carkparkLots.keys.contains(carparkNo)) continue;
 
+      // converts EPSG:3414 to EPSG:4326, (x,y) -> LatLng
       Point carparkPt = new Point(x: x, y: y);
       Point latlngPt = projSrc.transform(projDst, carparkPt);
-      LatLng latlng = LatLng(latlngPt.y, latlngPt.x);
+      LatLng cpLatLng = LatLng(latlngPt.y, latlngPt.x);
 
       MarkerId id =
           MarkerId("marker_id_" + (_backend.markerCount++).toString());
       Marker cpMarker = Marker(
         markerId: id,
         icon: _backend.customIcon,
-        position: latlng,
+        position: cpLatLng,
         onTap: () {
+          // sets local variables to be used in InfoWindow and bookmark
           setState(() {
-            _activeLocation = latlng;
-            _activeAvailable = (int.parse(
-                    _backend.carkparkLots[carparkNo]!["lotsAvailable"]!) >
-                0);
+            _activeLatLng = cpLatLng;
+            _activeAvailable =
+                int.parse(_backend.carkparkLots[carparkNo]!["lotsAvailable"]!) >
+                    0;
             _infoWindowPos = 20;
             _infoWindowTitle = record["address"]!;
             _infoWindowText = "Lots Available: " +
@@ -389,6 +409,7 @@ class _SearchPageState extends State<SearchPage> {
             _infoCPNo = carparkNo;
           });
         },
+        // basic gmaps infowindow
         infoWindow: InfoWindow(
           title: record["address"],
         ),
@@ -403,6 +424,7 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  // gets location and pans camera when a search suggestion is tapped
   void suggestionTap(int index) async {
     // set text in search textfield to suggestion text
     _searchController.text = _backend.suggestions[index]["text"];
@@ -426,16 +448,19 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void moveCamera(LatLng pos, {bool animate = false}) async {
-    CameraUpdate newCam = CameraUpdate.newCameraPosition(
+    // initialises new camera position
+    CameraUpdate newCamPos = CameraUpdate.newCameraPosition(
       CameraPosition(
         target: pos,
         zoom: _mapZoom,
       ),
     );
+
+    // gets map controller to pan camera
     GoogleMapController controller = await _mapController.future;
     if (animate)
-      controller.animateCamera(newCam);
+      controller.animateCamera(newCamPos);
     else
-      controller.moveCamera(newCam);
+      controller.moveCamera(newCamPos);
   }
 }
