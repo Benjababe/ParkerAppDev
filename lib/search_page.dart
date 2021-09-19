@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:proj4dart/proj4dart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'bloc/maps_bloc.dart';
 
@@ -27,10 +28,15 @@ class _SearchPageState extends State<SearchPage> {
   double _suggestionHeight = 0, _mapZoom = 16.5, _infoWindowPos = -100;
 
   // dark theme for maps
-  String _mapStyle = "", _infoWindowTitle = "Hello world", _infoWindowText = "";
+  String _mapStyle = "",
+      _infoWindowTitle = "Hello world",
+      _infoWindowText = "",
+      _infoCPNo = "";
 
   // is active parking lot available
-  bool _activeAvailable = false;
+  bool _activeAvailable = false, _infoWindowBookmarked = false;
+
+  late SharedPreferences _prefs;
 
   // definition for EPSG:3414 (SG)
   final String def =
@@ -138,7 +144,10 @@ class _SearchPageState extends State<SearchPage> {
         // populates map with carpark markers
         Map data = await this._backend.readCarparkLocation();
 
-        setState(() => addMarkers(data));
+        setState(() {
+          initSharedPreferences();
+          addMarkers(data);
+        });
 
         controller.setMapStyle(this._mapStyle);
         _mapController.complete(controller);
@@ -253,19 +262,40 @@ class _SearchPageState extends State<SearchPage> {
               Container(
                 width: 60,
               ),
-              // only shows confirmation button when lots are available
-              if (_activeAvailable)
-                Padding(
-                  padding: EdgeInsets.all(12),
-                  child: TextButton(
-                    child: Text("Confirm"),
-                    style: TextButton.styleFrom(
-                      primary: Colors.white,
-                      backgroundColor: Colors.lightBlue,
-                    ),
-                    onPressed: () => openDirections(),
+              Column(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(12, 6, 12, 6),
                   ),
-                ),
+                  Container(
+                    padding: EdgeInsets.all(0),
+                    height: 24,
+                    child: IconButton(
+                      icon: Icon(_infoWindowBookmarked
+                          ? Icons.bookmark
+                          : Icons.bookmark_border_outlined),
+                      padding: EdgeInsets.only(
+                        top: 3,
+                      ),
+                      color: null,
+                      onPressed: bookmarkMarker,
+                    ),
+                  ),
+                  // only shows confirmation button when lots are available
+                  if (_activeAvailable)
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(12, 6, 12, 6),
+                      child: TextButton(
+                        child: Text("Confirm"),
+                        style: TextButton.styleFrom(
+                          primary: Colors.white,
+                          backgroundColor: Colors.lightBlue,
+                        ),
+                        onPressed: () => openDirections(),
+                      ),
+                    ),
+                ],
+              ),
             ],
           ),
         ),
@@ -289,7 +319,33 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  void addMarkers(Map data) {
+  void bookmarkMarker() async {
+    List<String>? bookmarks = _prefs.getStringList("bookmarks");
+
+    if (bookmarks == null) bookmarks = [];
+
+    if (!bookmarks.contains(_infoCPNo))
+      bookmarks.add(_infoCPNo);
+    else
+      bookmarks.remove(_infoCPNo);
+
+    _prefs.setStringList("bookmarks", bookmarks);
+
+    setState(() {
+      _infoWindowBookmarked = !_infoWindowBookmarked;
+    });
+  }
+
+  void initSharedPreferences() async {
+    // get local storage variables
+    _prefs = await SharedPreferences.getInstance();
+
+    List<String>? bookmarks = _prefs.getStringList("bookmarks");
+    if (bookmarks == null) bookmarks = [];
+    _prefs.setStringList("bookmarks", bookmarks);
+  }
+
+  void addMarkers(Map data) async {
     // projections for converting coordinates
     Projection projSrc = Projection.add("EPSG:3414", def);
     Projection projDst = Projection.get("EPSG:4326")!;
@@ -328,6 +384,9 @@ class _SearchPageState extends State<SearchPage> {
                 _backend.carkparkLots[carparkNo]!["lotsTotal"]! +
                 "\nType: " +
                 record["car_park_type"];
+            _infoWindowBookmarked =
+                _prefs.getStringList("bookmarks")!.contains(carparkNo);
+            _infoCPNo = carparkNo;
           });
         },
         infoWindow: InfoWindow(
