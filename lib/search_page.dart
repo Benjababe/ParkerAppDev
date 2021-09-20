@@ -364,24 +364,17 @@ class _SearchPageState extends State<SearchPage> {
 
   // populate markers in backend object
   void addMarkers(Map data) async {
-    // projections for converting coordinates
-    Projection projSrc = Projection.add("EPSG:3414", def);
-    Projection projDst = Projection.get("EPSG:4326")!;
-
     // loop through all records of static carpark locations
     // and give each a marker with its own infowindow
     for (String carparkNo in data.keys) {
       Map record = data[carparkNo];
-      double x = double.parse(record["x_coord"]);
-      double y = double.parse(record["y_coord"]);
+      double cpLat = double.parse(record["lat"]);
+      double cpLng = double.parse(record["lng"]);
 
       // if there is no data on carpark lots for this marker, skip
       if (!_backend.carkparkLots.keys.contains(carparkNo)) continue;
 
-      // converts EPSG:3414 to EPSG:4326, (x,y) -> LatLng
-      Point carparkPt = new Point(x: x, y: y);
-      Point latlngPt = projSrc.transform(projDst, carparkPt);
-      LatLng cpLatLng = LatLng(latlngPt.y, latlngPt.x);
+      LatLng cpLatLng = LatLng(cpLat, cpLng);
 
       MarkerId id =
           MarkerId("marker_id_" + (_backend.markerCount++).toString());
@@ -441,8 +434,12 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void getCurrentLocation() async {
+    _prefs = await SharedPreferences.getInstance();
+    String? activeDestination = _prefs.getString("activeDestination");
+
     Position pos = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+      desiredAccuracy: LocationAccuracy.high,
+    );
     LatLng currentPos = new LatLng(pos.latitude, pos.longitude);
     moveCamera(currentPos);
   }

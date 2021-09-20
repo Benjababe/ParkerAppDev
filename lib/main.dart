@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 // local files
 import 'search_page.dart';
+import 'bookmark.dart';
 import 'bloc/maps_bloc.dart';
 
 void main() {
@@ -89,22 +90,23 @@ class _ParkerHome extends State<MyHomePage> {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) => AlertDialog(
-                        title: new Text("Location Permission Issue"),
-                        content: new Text(error),
-                        actions: <Widget>[
-                          if (error.toString().contains("denied"))
-                            TextButton(
-                              onPressed: () {
-                                openAppSettings();
-                                Navigator.pop(context, "OK");
-                              },
-                              child: Text("Open Settings"),
-                            ),
+                      title: new Text("Location Permission Issue"),
+                      content: new Text(error),
+                      actions: <Widget>[
+                        if (error.toString().contains("denied"))
                           TextButton(
-                            onPressed: () => Navigator.pop(context, "Cancel"),
-                            child: Text("Cancel"),
+                            onPressed: () {
+                              openAppSettings();
+                              Navigator.pop(context, "OK");
+                            },
+                            child: Text("Open Settings"),
                           ),
-                        ]),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, "Cancel"),
+                          child: Text("Cancel"),
+                        ),
+                      ],
+                    ),
                   );
                 }
               },
@@ -112,7 +114,9 @@ class _ParkerHome extends State<MyHomePage> {
             ElevatedButton.icon(
               icon: Icon(Icons.bookmark_outline, size: 16),
               label: Text('Bookmarks'),
-              onPressed: () => {},
+              onPressed: () {
+                showBookmarkMenu(context);
+              },
             ),
           ],
         ),
