@@ -7,7 +7,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
-import 'package:proj4dart/proj4dart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'bloc/maps_bloc.dart';
@@ -62,9 +61,6 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     super.initState();
-
-    // sets current camera to user location
-    getCurrentLocation();
 
     // retrieves map style from assets
     rootBundle.loadString("assets/map_style.json").then((style) {
@@ -151,10 +147,13 @@ class _SearchPageState extends State<SearchPage> {
       onMapCreated: (GoogleMapController controller) async {
         // populates map with carpark markers
         Map data = await this._backend.readCarparkLocation();
+        _prefs = await SharedPreferences.getInstance();
 
         setState(() {
-          initSharedPreferences();
+          initBookmarks();
           addMarkers(data);
+          // sets current camera to user location
+          getCurrentLocation();
         });
 
         controller.setMapStyle(this._mapStyle);
@@ -350,10 +349,7 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  void initSharedPreferences() async {
-    // get local storage variables
-    _prefs = await SharedPreferences.getInstance();
-
+  void initBookmarks() {
     // initialises empty list and stores if null
     List<String>? bookmarks = _prefs.getStringList("bookmarks");
     if (bookmarks == null) {
@@ -364,17 +360,37 @@ class _SearchPageState extends State<SearchPage> {
 
   // populate markers in backend object
   void addMarkers(Map data) async {
+    double? activeLat = _prefs.getDouble("activeLat"),
+        activeLng = _prefs.getDouble("activeLng");
     // loop through all records of static carpark locations
     // and give each a marker with its own infowindow
     for (String carparkNo in data.keys) {
       Map record = data[carparkNo];
-      double cpLat = double.parse(record["lat"]);
-      double cpLng = double.parse(record["lng"]);
+      double cpLat = record["lat"];
+      double cpLng = record["lng"];
 
       // if there is no data on carpark lots for this marker, skip
       if (!_backend.carkparkLots.keys.contains(carparkNo)) continue;
 
       LatLng cpLatLng = LatLng(cpLat, cpLng);
+
+      // programatically opens the infowindow
+      if (cpLat == activeLat && cpLng == activeLng) {
+        _activeLatLng = cpLatLng;
+        _activeAvailable =
+            int.parse(_backend.carkparkLots[carparkNo]!["lotsAvailable"]!) > 0;
+        _infoWindowPos = 20;
+        _infoWindowTitle = record["address"]!;
+        _infoWindowText = "Lots Available: " +
+            _backend.carkparkLots[carparkNo]!["lotsAvailable"]! +
+            "\nTotal Lots: " +
+            _backend.carkparkLots[carparkNo]!["lotsTotal"]! +
+            "\nType: " +
+            record["car_park_type"];
+        _infoWindowBookmarked =
+            _prefs.getStringList("bookmarks")!.contains(carparkNo);
+        _infoCPNo = carparkNo;
+      }
 
       MarkerId id =
           MarkerId("marker_id_" + (_backend.markerCount++).toString());
@@ -434,13 +450,20 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void getCurrentLocation() async {
-    _prefs = await SharedPreferences.getInstance();
-    String? activeDestination = _prefs.getString("activeDestination");
-
     Position pos = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
     LatLng currentPos = new LatLng(pos.latitude, pos.longitude);
+
+    double? activeLat = _prefs.getDouble("activeLat"),
+        activeLng = _prefs.getDouble("activeLng");
+    _prefs.remove("activeLat");
+    _prefs.remove("activeLng");
+
+    if (activeLat != null && activeLng != null) {
+      currentPos = new LatLng(activeLat, activeLng);
+    }
+
     moveCamera(currentPos);
   }
 

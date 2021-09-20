@@ -20,6 +20,8 @@ void showBookmarkMenu(BuildContext context) async {
       TextButton(
         onPressed: () {
           prefs.setString("activeDestination", carparkNo);
+          prefs.setDouble("activeLat", carpark["lat"]);
+          prefs.setDouble("activeLng", carpark["lng"]);
           Navigator.push(
             context,
             MaterialPageRoute(
