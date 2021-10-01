@@ -7,7 +7,7 @@ project/lib/constants.dart
 project/android/app/src/main/AndroidManifest.xml
 project/ios/Runner/AppDelegate.swift
 ```
-Be sure to unstage any commits to the files above before pushing. We don't want our API being public.
+Be sure to unstage any commits to the files above before pushing. We don't want our API key going public.
 
 ## Prerequisites
 Install [flutter](https://flutter.dev/docs/get-started/install) and before building the project, ensure all dependencies are installed locally first, run the following at the project folder
