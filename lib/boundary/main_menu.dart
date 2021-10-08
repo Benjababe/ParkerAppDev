@@ -29,33 +29,13 @@ class _MainMenuState extends State<MainMenu> {
               icon: Icon(Icons.search, size: 16),
               label: Text('Search'),
               onPressed: () async {
-                var error = await checkLocationService();
+                String error = await checkLocationService();
                 // if no errors with location services
-                if (error == null)
+                if (error == "")
                   navigateToSearch();
                 // pops up error message if navigate function returns non null string
                 else {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                      title: new Text("Location Permission Issue"),
-                      content: new Text(error),
-                      actions: <Widget>[
-                        if (error.toString().contains("denied"))
-                          TextButton(
-                            onPressed: () {
-                              openAppSettings();
-                              Navigator.pop(context, "OK");
-                            },
-                            child: Text("Open Settings"),
-                          ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, "Cancel"),
-                          child: Text("Cancel"),
-                        ),
-                      ],
-                    ),
-                  );
+                  popupPermissions(error);
                 }
               },
             ),
@@ -70,6 +50,7 @@ class _MainMenuState extends State<MainMenu> {
     );
   }
 
+  // only returns a string on error
   dynamic checkLocationService() async {
     bool locationEnabled = await Geolocator.isLocationServiceEnabled();
     if (!locationEnabled)
@@ -88,6 +69,31 @@ class _MainMenuState extends State<MainMenu> {
       permission = await Geolocator.checkPermission();
       count++;
     }
+    return "";
+  }
+
+  void popupPermissions(String error) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: new Text("Location Permission Issue"),
+        content: new Text(error),
+        actions: <Widget>[
+          if (error.toString().contains("denied"))
+            TextButton(
+              onPressed: () {
+                openAppSettings();
+                Navigator.pop(context, "OK");
+              },
+              child: Text("Open Settings"),
+            ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, "Cancel"),
+            child: Text("Cancel"),
+          ),
+        ],
+      ),
+    );
   }
 
   dynamic navigateToSearch() {}
