@@ -31,7 +31,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Hello there");
     return MaterialApp(
       title: 'Parker App',
       // set default global theme for the app
