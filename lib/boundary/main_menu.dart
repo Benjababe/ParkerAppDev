@@ -63,7 +63,7 @@ class _MainMenuState extends State<MainMenu> {
       return "Permission denied forever, please enable permission for Parker to work properly";
 
     while (permission == LocationPermission.denied) {
-      if (count >= 4)
+      if (count >= 3)
         return "Permissions denied multiple times, please allow location permissions for Parker to work properly";
       await LocationPermissions().requestPermissions();
       permission = await Geolocator.checkPermission();
