@@ -33,7 +33,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Parker App',
-      // branch test 2
       // set default global theme for the app
       theme: appTheme,
       //home: MyHomePage(title: 'Parker'),
