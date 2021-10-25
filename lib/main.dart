@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 // local files
 import 'boundary/main_menu.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   final ThemeData appTheme = ThemeData(
