@@ -1,0 +1,4 @@
+class NavigateInterface
+{
+  dynamic navigate(){}
+}
