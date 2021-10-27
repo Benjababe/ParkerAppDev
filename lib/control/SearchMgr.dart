@@ -19,14 +19,15 @@ class SearchMgr {
       "https://maps.googleapis.com/maps/api/place/details/json?place_id=:input:&key=" +
           API_KEY;
 
-  List suggestions = [];
+  List _suggestions = [];
 
   SearchMgr();
 
-  void getSuggestions(String query) async {
+  // uses google autocomplete api to get map suggestions
+  Future<List> getSuggestions(String query) async {
     if (query == "") {
-      suggestions = [];
-      return;
+      _suggestions = [];
+      return [];
     }
 
     String url = _autoCompleteURL.replaceAll(":input:", query);
@@ -48,7 +49,7 @@ class SearchMgr {
 
     log("\n");
 
-    suggestions = List.generate(
+    _suggestions = List.generate(
       predictions.length,
       (i) {
         String result = results[i];
@@ -61,12 +62,11 @@ class SearchMgr {
         };
       },
     );
+
+    return _suggestions;
   }
 
-  void clearSuggestions() {
-    suggestions = [];
-  }
-
+  // uses google "find place from text api" and details api to get destination latlng
   Future<LatLng> searchMap(String search) async {
     double lat = 0, lng = 0;
     String url = _findPlaceIdURL.replaceAll(":input:", search);

@@ -27,6 +27,8 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
   String _mapStyle = "";
   double _mapZoom = 16.5, _suggestionHeight = 0;
 
+  List _suggestions = [];
+
   late Timer _everySecond;
 
   @override
@@ -64,8 +66,7 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
                   child: generateMap(),
                 ),
                 _iwInterface.infoWindow,
-                if (_searchMgr.suggestions.length > 0)
-                  generateSuggestionCover(),
+                if (_suggestions.length > 0) generateSuggestionCover(),
                 Container(
                   height: _suggestionHeight,
                   child: generateSuggestionLV(),
@@ -91,8 +92,15 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
             hintText: "Search Destination",
             suffixIcon: Icon(Icons.search),
           ),
-          onChanged: (String query) {
-            _searchMgr.getSuggestions(query);
+          onChanged: (String query) async {
+            if (query == "") {
+              _suggestions = [];
+              return;
+            }
+
+            // gets list of suggestions from google autocomplete api
+            _suggestions = await _searchMgr.getSuggestions(query);
+            // show suggestions listview
             toggleListView(true);
           },
           onTap: () {
@@ -135,7 +143,7 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
     return ListView.builder(
       // prevent scrolling because of map
       physics: NeverScrollableScrollPhysics(),
-      itemCount: _searchMgr.suggestions.length,
+      itemCount: _suggestions.length,
       itemBuilder: (context, index) {
         return ListTile(
           title: RichText(
@@ -148,13 +156,13 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
                 // right is remainder (autocompleted string)
                 children: <TextSpan>[
                   TextSpan(
-                    text: _searchMgr.suggestions[index]["bold"],
+                    text: _suggestions[index]["bold"],
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   TextSpan(
-                    text: _searchMgr.suggestions[index]["rem"],
+                    text: _suggestions[index]["rem"],
                   ),
                 ]),
           ),
@@ -190,11 +198,13 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
 
   void onSuggestionTap(int index) async {
     // set text in textbox to full suggestion text
-    _txtBoxController.text = _searchMgr.suggestions[index]["text"];
+    _txtBoxController.text = _suggestions[index]["text"];
 
-    _searchMgr.clearSuggestions();
+    // clears suggestions and hide listview
+    _suggestions = [];
     toggleListView(false);
 
+    // get latlng of selected search location
     LatLng pos = await _searchMgr.searchMap(_txtBoxController.text);
     moveCamera(pos, animate: true);
   }
