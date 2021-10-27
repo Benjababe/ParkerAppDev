@@ -24,6 +24,7 @@ class _MainMenuState extends State<MainMenu> {
     initBookmarks();
   }
 
+  // set bookmarks to an empty list, prevent it from being null when first referenced.
   void initBookmarks() async {
     _prefs = await SharedPreferences.getInstance();
     List<String>? bookmarks = _prefs.getStringList("bookmarks");
@@ -49,14 +50,14 @@ class _MainMenuState extends State<MainMenu> {
               icon: Icon(Icons.search, size: 16),
               label: Text('Search'),
               onPressed: () async {
-                //String error = await checkLocationService();
+                String error = await checkLocationService();
                 // if no errors with location services
-                //if (error == "")
-                navigateToSearch();
+                if (error == "")
+                  navigateToSearch();
                 // pops up error message if navigate function returns non null string
-                //else {
-                //  popupPermissions(error);
-                //}
+                else {
+                  popupPermissions(error);
+                }
               },
             ),
             ElevatedButton.icon(

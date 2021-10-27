@@ -99,7 +99,8 @@ class CarparksMgr {
         "Type: " +
         record["car_park_type"];
 
-    _iwInterface.setValues(cpName, cpInfo, cpNum);
+    _iwInterface.setIWValues(cpName, cpInfo, cpNum);
+    _iwInterface.setDestination(record["lat"], record["lng"]);
     _iwInterface.showWindow();
   }
 
@@ -136,6 +137,7 @@ class CarparksMgr {
 
   //selecting carpark from the available ones
   void selectCarparks(Carparks c) {}
+
   //displaying information of selected carparks
   void displayInfo(Carparks c) {}
 }

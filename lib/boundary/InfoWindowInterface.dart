@@ -17,11 +17,15 @@ class InfoWindowInterface {
     refresh();
   }
 
-  void setValues(String cpName, String cpInfo, String cpNum) {
+  void setIWValues(String cpName, String cpInfo, String cpNum) {
     _infoWindowTitle = cpName;
     _infoWindowText = cpInfo;
     _cpNum = cpNum;
     refresh();
+  }
+
+  void setDestination(double lat, double lng) {
+    navMgr.setEndLocation(lat, lng);
   }
 
   void setCPNum(String cpNum) {
@@ -134,7 +138,9 @@ class InfoWindowInterface {
                           primary: Colors.white,
                           backgroundColor: Colors.lightBlue,
                         ),
-                        onPressed: () => navMgr.displayMap(),
+                        onPressed: () {
+                          navMgr.displayMap();
+                        },
                       ),
                     ),
                 ],
