@@ -3,6 +3,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:location_permissions/location_permissions.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:app/boundary/CarparksInterface.dart';
 
 class MainMenu extends StatefulWidget {
   MainMenu({Key? key, required this.title}) : super(key: key);
@@ -13,6 +16,23 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuState extends State<MainMenu> {
+  late SharedPreferences _prefs;
+
+  @override
+  void initState() {
+    super.initState();
+    initBookmarks();
+  }
+
+  void initBookmarks() async {
+    _prefs = await SharedPreferences.getInstance();
+    List<String>? bookmarks = _prefs.getStringList("bookmarks");
+    if (bookmarks == null) {
+      bookmarks = [];
+      await _prefs.setStringList("bookmarks", bookmarks);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,5 +116,12 @@ class _MainMenuState extends State<MainMenu> {
     );
   }
 
-  dynamic navigateToSearch() {}
+  dynamic navigateToSearch() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CarparksInterface(),
+      ),
+    );
+  }
 }
