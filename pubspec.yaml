@@ -56,7 +56,6 @@ flutter:
   assets:
     - assets/carpark_static_data.json
     - assets/map_style.json
-    - assets/parking_logo_full.png
     - assets/parking_logo.png
 
   # To add assets to your application, add an assets section, like this:

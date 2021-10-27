@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:app/boundary/InfoWindowInterface.dart';
 
@@ -66,12 +66,27 @@ class CarparksMgr {
     return null;
   }
 
+  Future<void> addSearchMarker(LatLng pos) async {
+    // removes and previously existing search markers
+    _markers.removeWhere((Marker marker) {
+      return marker.markerId.value == "marker_search";
+    });
+
+    _markers.add(
+      Marker(
+        markerId: MarkerId("marker_search"),
+        position: pos,
+      ),
+    );
+  }
+
   void markerOnTap(Map record) async {
     String cpName = record["address"],
         cpNum = record["car_park_no"],
-        liveURL = "https://parkerlivelots.benjababe.repl.co/carpark/" + cpNum;
+        liveURL = "http://116.88.29.109:3000/carpark/" + cpNum;
 
-    Response res = await get(Uri.parse(liveURL));
+    print("Getting from url: " + liveURL);
+    http.Response res = await http.get(Uri.parse(liveURL));
     String availStr = res.body;
     Map availLots = json.decode(availStr);
 

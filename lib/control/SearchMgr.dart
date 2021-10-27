@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:app/static/constants.dart';
 
@@ -24,6 +24,7 @@ class SearchMgr {
   SearchMgr();
 
   // uses google autocomplete api to get map suggestions
+
   Future<List> getSuggestions(String query) async {
     if (query == "") {
       _suggestions = [];
@@ -31,7 +32,7 @@ class SearchMgr {
     }
 
     String url = _autoCompleteURL.replaceAll(":input:", query);
-    Response res = await post(Uri.parse(url));
+    http.Response res = await http.post(Uri.parse(url));
 
     dynamic data = json.decode(res.body);
     List predictions = data["predictions"], results = [], matches = [];
@@ -67,10 +68,11 @@ class SearchMgr {
   }
 
   // uses google "find place from text api" and details api to get destination latlng
+
   Future<LatLng> searchMap(String search) async {
     double lat = 0, lng = 0;
     String url = _findPlaceIdURL.replaceAll(":input:", search);
-    Response res = await post(Uri.parse(url));
+    http.Response res = await http.post(Uri.parse(url));
 
     dynamic data = json.decode(res.body);
 
@@ -79,7 +81,7 @@ class SearchMgr {
       String placeID = candidate["place_id"];
 
       url = _getMarkerByIdURL.replaceAll(":input:", placeID);
-      res = await post(Uri.parse(url));
+      res = await http.post(Uri.parse(url));
       data = json.decode(res.body);
 
       Map searchResult = data["result"];

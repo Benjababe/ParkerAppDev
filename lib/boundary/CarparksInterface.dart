@@ -181,7 +181,7 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
   // generates widget that overlays the suggestions, giving it colour
   Container generateSuggestionCover() {
     return Container(
-      height: _suggestionHeight,
+      height: _suggestionHeight / 5 * _suggestions.length,
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.5),
@@ -190,6 +190,7 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
     );
   }
 
+  // shows/hides the suggestion list view
   void toggleListView(bool status) {
     setState(() {
       _suggestionHeight = (status) ? 290 : 0;
@@ -206,6 +207,7 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
 
     // get latlng of selected search location
     LatLng pos = await _searchMgr.searchMap(_txtBoxController.text);
+    await _cpMgr.addSearchMarker(pos);
     moveCamera(pos, animate: true);
   }
 
