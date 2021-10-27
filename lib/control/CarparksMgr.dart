@@ -73,9 +73,6 @@ class CarparksMgr {
 
     Response res = await get(Uri.parse(liveURL));
     String availStr = res.body;
-
-    if (availStr == "Carpark doesn't exist!") return;
-
     Map availLots = json.decode(availStr);
 
     String cpInfo = "Lots Available: " +

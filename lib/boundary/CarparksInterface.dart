@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/control/SearchMgr.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,14 +17,15 @@ class CarparksInterface extends StatefulWidget {
 }
 
 class _CarparksInterfaceState extends State<CarparksInterface> {
-  final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _txtBoxController = TextEditingController();
   Completer<GoogleMapController> _mapController = Completer();
+
   InfoWindowInterface _iwInterface = new InfoWindowInterface();
   CarparksMgr _cpMgr = new CarparksMgr();
+  SearchMgr _searchMgr = new SearchMgr();
 
   String _mapStyle = "";
   double _mapZoom = 16.5, _suggestionHeight = 0;
-  List<Map<String, String>> _suggestions = [];
 
   late Timer _everySecond;
 
@@ -62,7 +64,12 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
                   child: generateMap(),
                 ),
                 _iwInterface.infoWindow,
-                if (_suggestions.length > 0) generateSuggestionCover(),
+                if (_searchMgr.suggestions.length > 0)
+                  generateSuggestionCover(),
+                Container(
+                  height: _suggestionHeight,
+                  child: generateSuggestionLV(),
+                ),
               ],
             ),
           ],
@@ -78,13 +85,21 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
       child: Padding(
         padding: EdgeInsets.all(8),
         child: TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: "Search Destination",
-              suffixIcon: Icon(Icons.search),
-            ),
-            onChanged: (String query) {}),
+          controller: _txtBoxController,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            hintText: "Search Destination",
+            suffixIcon: Icon(Icons.search),
+          ),
+          onChanged: (String query) {
+            _searchMgr.getSuggestions(query);
+            toggleListView(true);
+          },
+          onTap: () {
+            _iwInterface.hideWindow();
+            toggleListView(true);
+          },
+        ),
       ),
     );
   }
@@ -110,6 +125,7 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
       },
       onTap: (LatLng pos) {
         _iwInterface.hideWindow();
+        toggleListView(false);
       },
     );
   }
@@ -119,7 +135,7 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
     return ListView.builder(
       // prevent scrolling because of map
       physics: NeverScrollableScrollPhysics(),
-      itemCount: _suggestions.length,
+      itemCount: _searchMgr.suggestions.length,
       itemBuilder: (context, index) {
         return ListTile(
           title: RichText(
@@ -127,21 +143,27 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
                 style: TextStyle(
                   color: Colors.white,
                 ),
+                // text is split into 2 parts
+                // left is bold (matched string)
+                // right is remainder (autocompleted string)
                 children: <TextSpan>[
                   TextSpan(
-                    text: _suggestions[index]["bold"],
+                    text: _searchMgr.suggestions[index]["bold"],
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   TextSpan(
-                    text: _suggestions[index]["rem"],
+                    text: _searchMgr.suggestions[index]["rem"],
                   ),
                 ]),
           ),
           onTap: () {
             // makes listview the focus (hides soft keyboard)
-            FocusScope.of(context).requestFocus(new FocusNode());
+            FocusScope.of(context).requestFocus(
+              new FocusNode(),
+            );
+            onSuggestionTap(index);
           },
         );
       },
@@ -158,6 +180,23 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
         backgroundBlendMode: BlendMode.darken,
       ),
     );
+  }
+
+  void toggleListView(bool status) {
+    setState(() {
+      _suggestionHeight = (status) ? 290 : 0;
+    });
+  }
+
+  void onSuggestionTap(int index) async {
+    // set text in textbox to full suggestion text
+    _txtBoxController.text = _searchMgr.suggestions[index]["text"];
+
+    _searchMgr.clearSuggestions();
+    toggleListView(false);
+
+    LatLng pos = await _searchMgr.searchMap(_txtBoxController.text);
+    moveCamera(pos, animate: true);
   }
 
   // pans camera to location "pos"
