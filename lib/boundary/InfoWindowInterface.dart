@@ -17,6 +17,7 @@ class InfoWindowInterface {
     refresh();
   }
 
+  // variables to be displayed
   void setIWValues(String cpName, String cpInfo, String cpNum) {
     _infoWindowTitle = cpName;
     _infoWindowText = cpInfo;

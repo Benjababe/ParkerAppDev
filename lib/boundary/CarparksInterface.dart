@@ -97,7 +97,7 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
               _suggestions = [];
               return;
             }
-
+            print("Searching query");
             // gets list of suggestions from google autocomplete api
             _suggestions = await _searchMgr.getSuggestions(query);
             // show suggestions listview
@@ -134,6 +134,9 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
       onTap: (LatLng pos) {
         _iwInterface.hideWindow();
         toggleListView(false);
+        FocusScope.of(context).requestFocus(
+          new FocusNode(),
+        );
       },
     );
   }

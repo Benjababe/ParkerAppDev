@@ -11,10 +11,11 @@ import 'package:app/boundary/InfoWindowInterface.dart';
 
 class CarparksMgr {
   late int _range;
-  late List<Carparks> cpList;
+  late Map<String, Carpark> cpMap = new Map();
   late BitmapDescriptor customIconFree, customIconFull;
   Set<Marker> _markers = {};
 
+  // interface is passed from CarparkInterface
   late InfoWindowInterface _iwInterface;
 
   //class constructor
@@ -25,8 +26,8 @@ class CarparksMgr {
   }
 
   //aggregating carparks into carparksMgr
-  void addCarparks(Carparks c) {
-    cpList.add(c);
+  void addCarpark(String cpNum, Carpark c) {
+    cpMap[cpNum] = c;
   }
 
   Set<Marker> getMarkers() {
@@ -45,8 +46,13 @@ class CarparksMgr {
   }
 
   Future<void> populateCPMarkers(Map data) async {
-    for (String carparkNum in data.keys) {
-      Map record = data[carparkNum];
+    for (String cpNum in data.keys) {
+      Map record = data[cpNum];
+
+      Carpark carpark = new Carpark(cpNum, record["lat"], record["lng"],
+          record["type_of_parking_system"], record["address"]);
+      addCarpark(cpNum, carpark);
+
       double cpLat = record["lat"], cpLng = record["lng"];
       LatLng cpLatLng = new LatLng(cpLat, cpLng);
 
@@ -72,6 +78,7 @@ class CarparksMgr {
       return marker.markerId.value == "marker_search";
     });
 
+    // adds marker of search result into total set
     _markers.add(
       Marker(
         markerId: MarkerId("marker_search"),
@@ -80,6 +87,7 @@ class CarparksMgr {
     );
   }
 
+  // retrieves corresponding carpark's live availability and outputs infowindow
   void markerOnTap(Map record) async {
     String cpName = record["address"],
         cpNum = record["car_park_no"],
@@ -121,9 +129,7 @@ class CarparksMgr {
     return _range;
   }
 
-  //realising interface
-  dynamic carparks() {}
-
+  // retrieves current location from gps
   Future<LatLng> getCurrentLocation() async {
     Position pos = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
@@ -136,8 +142,8 @@ class CarparksMgr {
   void displayCarparks(int _range) {}
 
   //selecting carpark from the available ones
-  void selectCarparks(Carparks c) {}
+  void selectCarparks(Carpark c) {}
 
   //displaying information of selected carparks
-  void displayInfo(Carparks c) {}
+  void displayInfo(Carpark c) {}
 }
