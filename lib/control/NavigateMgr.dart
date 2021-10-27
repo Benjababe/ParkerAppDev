@@ -5,7 +5,7 @@ class NavigateMgr implements NavigateInterface {
   late String _endLocation;
 
   //class constructor
-  NavigateMgr() {}
+  NavigateMgr();
 
   //set function
   void setStartLocation(String startLocation) {

@@ -83,7 +83,7 @@ class CarparksMgr {
   void markerOnTap(Map record) async {
     String cpName = record["address"],
         cpNum = record["car_park_no"],
-        liveURL = "http://116.88.29.109:3000/carpark/" + cpNum;
+        liveURL = "http://benjababe.ddns.net:3000/carpark/" + cpNum;
 
     print("Getting from url: " + liveURL);
     http.Response res = await http.get(Uri.parse(liveURL));

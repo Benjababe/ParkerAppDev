@@ -119,7 +119,6 @@ class InfoWindowInterface {
                       ),
                       color: null,
                       onPressed: () {
-                        print("Printer says hi: " + _cpNum);
                         bkMgr.bookmarkMarker(_cpNum);
                         _infoWindowBookmarked = !_infoWindowBookmarked;
                       },
