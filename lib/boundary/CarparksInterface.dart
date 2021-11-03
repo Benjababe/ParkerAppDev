@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app/control/SearchMgr.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,9 +18,13 @@ class CarparksInterface extends StatefulWidget {
 }
 
 class _CarparksInterfaceState extends State<CarparksInterface> {
-  final TextEditingController _txtBoxController = TextEditingController();
+  // controller for checking textfield changes for search bar
+  TextEditingController _txtBoxController = TextEditingController();
+
+  // controller for handling google map updates
   Completer<GoogleMapController> _mapController = Completer();
 
+  // self declared boundaries and controllers
   InfoWindowInterface _iwInterface = new InfoWindowInterface();
   CarparksMgr _cpMgr = new CarparksMgr();
   SearchMgr _searchMgr = new SearchMgr();
@@ -28,8 +33,6 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
   double _mapZoom = 16.5, _suggestionHeight = 0;
 
   List _suggestions = [];
-
-  late Timer _everySecond;
 
   @override
   void initState() {
@@ -45,7 +48,7 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
 
     // check state update every 0.2s
     // for infowindow interface updating
-    _everySecond = Timer.periodic(Duration(milliseconds: 200), (Timer t) {
+    Timer.periodic(Duration(milliseconds: 200), (Timer t) {
       setState(() {});
     });
   }
@@ -53,25 +56,42 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        backgroundColor: Colors.black,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: generateSearchBar(),
+      ),
       backgroundColor: Colors.black,
+      resizeToAvoidBottomInset: false,
       body: Center(
-        child: ListView(
-          physics: NeverScrollableScrollPhysics(),
+        child: Stack(
           children: [
-            generateSearchBar(),
-            Stack(
-              children: [
-                Container(
-                  height: 590,
-                  child: generateMap(),
-                ),
-                _iwInterface.infoWindow,
-                if (_suggestions.length > 0) generateSuggestionCover(),
-                Container(
-                  height: _suggestionHeight,
-                  child: generateSuggestionLV(),
-                ),
-              ],
+            // maps uses all available space
+            SizedBox(
+              height: double.infinity,
+              width: double.infinity,
+              child: generateMap(),
+            ),
+
+            // include info window for carpark info
+            _iwInterface.infoWindow,
+
+            // only show suggestion transluscent cover when suggestions exist
+            if (_suggestions.length > 0) generateSuggestionCover(),
+
+            // adjust listview height according to number of suggestions
+            Container(
+              height: _suggestionHeight / 5 * _suggestions.length,
+              child: generateSuggestionLV(),
             ),
           ],
         ),
@@ -82,17 +102,36 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
   // generates widget for search bar
   Container generateSearchBar() {
     return Container(
-      color: Colors.white,
+      color: Colors.black,
       child: Padding(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.all(0),
         child: TextField(
           controller: _txtBoxController,
           decoration: InputDecoration(
-            border: OutlineInputBorder(),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(5),
+              ),
+              borderSide: BorderSide(
+                color: Colors.white,
+                width: 3,
+              ),
+            ),
             hintText: "Search Destination",
-            suffixIcon: Icon(Icons.search),
+            hintStyle: TextStyle(
+              color: Colors.white,
+            ),
+            suffixIcon: Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
+          ),
+          cursorColor: Colors.white,
+          style: TextStyle(
+            color: Colors.white,
           ),
           onChanged: (String query) async {
+            // if query is empty, clear suggestions
             if (query == "") {
               _suggestions = [];
               return;
