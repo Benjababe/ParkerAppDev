@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:app/boundary/CarparksInterface.dart';
+import 'package:app/boundary/CarparksNearMeInterface.dart';
+
 
 class MainMenu extends StatefulWidget {
   MainMenu({Key? key, required this.title}) : super(key: key);
@@ -65,6 +67,12 @@ class _MainMenuState extends State<MainMenu> {
               label: Text('Bookmarks'),
               onPressed: () {},
             ),
+            // Navigate to carparks near me
+            ElevatedButton.icon(
+              icon: Icon(Icons.local_parking_outlined, size: 16),
+              label: Text('Carparks Near Me'),
+              onPressed: () => navigateToScreen(),
+            ),
           ],
         ),
       ),
@@ -122,6 +130,15 @@ class _MainMenuState extends State<MainMenu> {
       context,
       MaterialPageRoute(
         builder: (context) => CarparksInterface(),
+      ),
+    );
+  }
+
+  dynamic navigateToScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CarparksNearMeInterface(),
       ),
     );
   }
