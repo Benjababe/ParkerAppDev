@@ -108,15 +108,7 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
         child: TextField(
           controller: _txtBoxController,
           decoration: InputDecoration(
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(5),
-              ),
-              borderSide: BorderSide(
-                color: Colors.white,
-                width: 3,
-              ),
-            ),
+            focusedBorder: InputBorder.none,
             hintText: "Search Destination",
             hintStyle: TextStyle(
               color: Colors.white,
