@@ -1,10 +1,9 @@
 // external packages
-import 'package:geolocator/geolocator.dart';
-import 'package:location_permissions/location_permissions.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:app/control/PermissionsMgr.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:permission_handler/permission_handler.dart';
 import 'package:app/boundary/CarparksInterface.dart';
 import 'package:app/boundary/CarparksNearMeInterface.dart';
 
@@ -17,6 +16,7 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuState extends State<MainMenu> {
+  PermissionsMgr permissionsMgr = new PermissionsMgr();
   late SharedPreferences _prefs;
 
   @override
@@ -51,13 +51,13 @@ class _MainMenuState extends State<MainMenu> {
               icon: Icon(Icons.search, size: 16),
               label: Text('Search'),
               onPressed: () async {
-                String error = await checkLocationService();
+                String error = await permissionsMgr.checkLocationService();
                 // if no errors with location services
                 if (error == "")
-                  navigateToSearch();
+                  navigateToCarparks();
                 // pops up error message if navigate function returns non null string
                 else {
-                  popupPermissions(error);
+                  permissionsMgr.popupPermissions(context, error);
                 }
               },
             ),
@@ -70,7 +70,7 @@ class _MainMenuState extends State<MainMenu> {
             ElevatedButton.icon(
               icon: Icon(Icons.local_parking_outlined, size: 16),
               label: Text('Carparks Near Me'),
-              onPressed: () => navigateToScreen(),
+              onPressed: () => navigateToCarparksNearMe(),
             ),
           ],
         ),
@@ -78,53 +78,7 @@ class _MainMenuState extends State<MainMenu> {
     );
   }
 
-  // only returns a string on error
-  dynamic checkLocationService() async {
-    bool locationEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!locationEnabled)
-      return "Location services disabled, please enable location services on your smartphone for Parker to work properly";
-
-    int count = 0;
-    LocationPermission permission = await Geolocator.checkPermission();
-
-    if (permission == LocationPermission.deniedForever)
-      return "Permission denied forever, please enable permission for Parker to work properly";
-
-    while (permission == LocationPermission.denied) {
-      if (count >= 3)
-        return "Permissions denied multiple times, please allow location permissions for Parker to work properly";
-      await LocationPermissions().requestPermissions();
-      permission = await Geolocator.checkPermission();
-      count++;
-    }
-    return "";
-  }
-
-  void popupPermissions(String error) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: new Text("Location Permission Issue"),
-        content: new Text(error),
-        actions: <Widget>[
-          if (error.toString().contains("denied"))
-            TextButton(
-              onPressed: () {
-                openAppSettings();
-                Navigator.pop(context, "OK");
-              },
-              child: Text("Open Settings"),
-            ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, "Cancel"),
-            child: Text("Cancel"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  dynamic navigateToSearch() {
+  dynamic navigateToCarparks() {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -133,7 +87,7 @@ class _MainMenuState extends State<MainMenu> {
     );
   }
 
-  dynamic navigateToScreen() {
+  dynamic navigateToCarparksNearMe() {
     Navigator.push(
       context,
       MaterialPageRoute(
