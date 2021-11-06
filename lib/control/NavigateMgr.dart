@@ -42,10 +42,10 @@ class NavigateMgr implements NavigateInterface {
           : Uri.parse("https://maps.apple.com/?q=${_endLoc[0]},${_endLoc[1]}");
 
       // if uri is supported natively, open it. this will open the app
-      //if (await canLaunch(uri.toString()))
+      if (await canLaunch(uri.toString()))
         await launch(uri.toString());
-      //else
-        //throw "Could not launch ${uri.toString()}";
+      else
+        throw "Could not launch ${uri.toString()}";
     }
   }
 }
