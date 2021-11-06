@@ -64,9 +64,9 @@ The project starts from the lib/main.dart file under its main() function. Try to
 
 ## Non-Functional Requirements
 ### Usability
-- [ ] 1. The system must be able to display information on four of Singapore's most common languages: English, Malay, Tamil, Chinese.
+- [x] 1. The system must be able to display information on four of Singapore's most common languages: English, Malay, Tamil, Chinese.
 - [x] 1.1. The default language of the system is English.
-- [ ] 1.2. The users must be able to change the system's language on settings.
+- [x] 1.2. The users must be able to change the system's language on settings.
 
 - [x] 2. 80% of first time users must be able to enter a simple search query within 2 minutes of starting to use the system.
 
