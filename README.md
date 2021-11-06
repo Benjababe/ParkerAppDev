@@ -27,3 +27,11 @@ If you're using an Android emulator to run the program, ensure that Google Play 
 
 ## Starting on the Project
 The project starts from the lib/main.dart file under its main() function. Try to keep each "screen" as its own separate .dart file and import them when needed.
+
+## Functional Requirements
+### 1. The system must always be able to gain permission to access users’ location at any point.
+#### 1.1. The system will query the user for permission to access users’ location.
+- [x] 1.1.1. If succeeded, the user shall proceed to the next functionality (2).
+- [x] 1.1.2. If failed, the user shall be notified that the user will not be able to proceed to the next functionality (2).
+
+
