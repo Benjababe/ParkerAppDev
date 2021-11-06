@@ -64,22 +64,22 @@ The project starts from the lib/main.dart file under its main() function. Try to
 
 ## Non-Functional Requirements
 ### Usability
--[ ] 1. The system must be able to display information on four of Singapore's most common languages: English, Malay, Tamil, Chinese.
--[x] 1.1. The default language of the system is English.
--[ ] 1.2. The users must be able to change the system's language on settings.
+- [ ] 1. The system must be able to display information on four of Singapore's most common languages: English, Malay, Tamil, Chinese.
+- [x] 1.1. The default language of the system is English.
+- [ ] 1.2. The users must be able to change the system's language on settings.
 
--[x] 2. 80% of first time users must be able to enter a simple search query within 2 minutes of starting to use the system.
+- [x] 2. 80% of first time users must be able to enter a simple search query within 2 minutes of starting to use the system.
 
--[x] 3.The system must be able to  suggest locations using a dropdown list with Google
+- [x] 3.The system must be able to  suggest locations using a dropdown list with Google
    Auto-complete API, while the user is entering the start and end points. 
 
 ### Reliability
--[x] 4. After a system reboot, full system functionality must be restored within 5 seconds.
+- [x] 4. After a system reboot, full system functionality must be restored within 5 seconds.
 
 ### Performance
--[x] 5. The system must be able to show parking spots within 500m of users’ end points within 10
+- [x] 5. The system must be able to show parking spots within 500m of users’ end points within 10
     seconds.
 
 ### Supportability 
--[x] 6. The system must be able to access the API using the HTTP GET request.
--[x] 7. System must be able to be run in iOS and Android.
+- [x] 6. The system must be able to access the API using the HTTP GET request.
+- [x] 7. System must be able to be run in iOS and Android.
