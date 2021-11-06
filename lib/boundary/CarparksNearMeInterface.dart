@@ -16,9 +16,11 @@ class CarparksNearMeInterface extends StatefulWidget {
 }
 
 class _CarparksNearMeInterface extends State<CarparksNearMeInterface> {
+  // controller to handle google map
   Completer<GoogleMapController> _mapController = Completer();
 
-  late InfoWindowInterface _iwInterface;
+  // boundaries and controllers
+  InfoWindowInterface _iwInterface = new InfoWindowInterface();
   CarparksMgr _cpMgr = new CarparksMgr();
 
   String _mapStyle = "";
@@ -35,12 +37,19 @@ class _CarparksNearMeInterface extends State<CarparksNearMeInterface> {
 
     // pass interface class to controller as it needs to modify it
     _cpMgr.setIWInterface(_iwInterface);
+
+    // check state update every 1s
+    // for infowindow interface updating
+    Timer.periodic(Duration(milliseconds: 1000), (Timer t) {
+      setState(() {});
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    _iwInterface = new InfoWindowInterface();
-
+    _cpMgr.setCtx(context);
+    _iwInterface.setCtx(context);
+    _iwInterface.refresh(); 
     return Scaffold(
       // Back button
       appBar: AppBar(
@@ -91,6 +100,13 @@ class _CarparksNearMeInterface extends State<CarparksNearMeInterface> {
         mapController.setMapStyle(_mapStyle);
         _mapController.complete(mapController);
       },
+      /*onTap: (LatLng pos) {
+        _iwInterface.hideWindow();
+        toggleListView(false);
+        FocusScope.of(context).requestFocus(
+          new FocusNode(),
+        );
+      }, */
     );
   }
 
