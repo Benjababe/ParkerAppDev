@@ -9,6 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:app/boundary/InfoWindowInterface.dart';
 import "package:app/control/CarparksMgr.dart";
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CarparksInterface extends StatefulWidget {
   CarparksInterface({Key? key}) : super(key: key);
@@ -55,6 +56,10 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
 
   @override
   Widget build(BuildContext context) {
+    _cpMgr.setCtx(context);
+    _iwInterface.setCtx(context);
+    _iwInterface.refresh();
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -109,7 +114,7 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
           controller: _txtBoxController,
           decoration: InputDecoration(
             focusedBorder: InputBorder.none,
-            hintText: "Search Destination",
+            hintText: AppLocalizations.of(context)!.searchPlaceholder,
             hintStyle: TextStyle(
               color: Colors.white,
             ),

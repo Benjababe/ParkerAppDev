@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-
 import 'package:app/boundary/InfoWindowInterface.dart';
 import "package:app/control/CarparksMgr.dart";
-
 
 class CarparksNearMeInterface extends StatefulWidget {
   CarparksNearMeInterface({Key? key}) : super(key: key);
@@ -17,13 +15,12 @@ class CarparksNearMeInterface extends StatefulWidget {
   _CarparksNearMeInterface createState() => _CarparksNearMeInterface();
 }
 
-class _CarparksNearMeInterface extends State<CarparksNearMeInterface>{
-
+class _CarparksNearMeInterface extends State<CarparksNearMeInterface> {
   Completer<GoogleMapController> _mapController = Completer();
 
-  InfoWindowInterface _iwInterface = new InfoWindowInterface();
+  late InfoWindowInterface _iwInterface;
   CarparksMgr _cpMgr = new CarparksMgr();
-  
+
   String _mapStyle = "";
   double _mapZoom = 16.5;
 
@@ -41,19 +38,21 @@ class _CarparksNearMeInterface extends State<CarparksNearMeInterface>{
   }
 
   @override
-   Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
+    _iwInterface = new InfoWindowInterface();
+
     return Scaffold(
       // Back button
       appBar: AppBar(
-        automaticallyImplyLeading: true,
-        //`true` if you want Flutter to automatically add Back Button when needed,
-        //or `false` if you want to force your own back button every where
-        leading: IconButton(icon:Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-       )
-      ),
+          automaticallyImplyLeading: true,
+          //`true` if you want Flutter to automatically add Back Button when needed,
+          //or `false` if you want to force your own back button every where
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )),
       backgroundColor: Colors.black,
       body: Center(
         child: ListView(
@@ -70,7 +69,7 @@ class _CarparksNearMeInterface extends State<CarparksNearMeInterface>{
           ],
         ),
       ),
-   );
+    );
   }
 
   // generates widget for google map

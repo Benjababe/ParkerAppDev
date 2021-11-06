@@ -2,10 +2,12 @@
 import 'package:app/control/PermissionsMgr.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 import 'package:app/boundary/CarparksInterface.dart';
 import 'package:app/boundary/CarparksNearMeInterface.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MainMenu extends StatefulWidget {
   MainMenu({Key? key, required this.title}) : super(key: key);
@@ -49,7 +51,7 @@ class _MainMenuState extends State<MainMenu> {
             ),
             ElevatedButton.icon(
               icon: Icon(Icons.search, size: 16),
-              label: Text('Search'),
+              label: Text(AppLocalizations.of(context)!.searchButton),
               onPressed: () async {
                 String error = await permissionsMgr.checkLocationService();
                 // if no errors with location services
@@ -63,7 +65,7 @@ class _MainMenuState extends State<MainMenu> {
             ),
             ElevatedButton.icon(
               icon: Icon(Icons.bookmark_outline, size: 16),
-              label: Text('Bookmarks'),
+              label: Text(AppLocalizations.of(context)!.bookmarksButton),
               onPressed: () {},
             ),
             // Navigate to carparks near me

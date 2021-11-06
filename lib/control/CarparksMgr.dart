@@ -8,11 +8,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:app/boundary/InfoWindowInterface.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CarparksMgr {
   late int _range;
   late Map<String, Carpark> cpMap = new Map();
   late BitmapDescriptor customIconFree, customIconFull;
+  late BuildContext _ctx;
   Set<Marker> _markers = {};
 
   // interface is passed from CarparkInterface
@@ -98,13 +100,16 @@ class CarparksMgr {
     String availStr = res.body;
     Map availLots = json.decode(availStr);
 
-    String cpInfo = "Lots Available: " +
+    String cpInfo = AppLocalizations.of(_ctx)!.lotsAvailableTxt +
+        ": " +
         availLots["lots_available"] +
         "\n" +
-        "Lots Total: " +
+        AppLocalizations.of(_ctx)!.lotsTotalTxt +
+        ": " +
         availLots["total_lots"] +
         "\n" +
-        "Type: " +
+        AppLocalizations.of(_ctx)!.typeTxt +
+        ": " +
         record["car_park_type"];
 
     _iwInterface.setIWValues(cpName, cpInfo, cpNum);
@@ -146,4 +151,8 @@ class CarparksMgr {
 
   //displaying information of selected carparks
   void displayInfo(Carpark c) {}
+
+  void setCtx(BuildContext ctx) {
+    _ctx = ctx;
+  }
 }

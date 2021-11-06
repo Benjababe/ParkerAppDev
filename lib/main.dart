@@ -1,8 +1,10 @@
 // external packages
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 // local files
 import 'boundary/MainInterface.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() => runApp(MyApp());
 
@@ -33,6 +35,18 @@ class MyApp extends StatelessWidget {
       title: 'Parker App',
       // set default global theme for the app
       theme: appTheme,
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale("en", ""),
+        Locale("zh", "CN"),
+        Locale("ms", "SG"),
+        Locale("ta", "SG")
+      ],
       home: MainMenu(title: "Parker"),
     );
   }

@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 
 import 'package:app/control/NavigateMgr.dart';
 import 'package:app/control/BookmarksMgr.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class InfoWindowInterface {
+  late BuildContext _ctx;
   NavigateMgr navMgr = new NavigateMgr();
   BookmarksMgr bkMgr = new BookmarksMgr();
 
@@ -14,7 +16,11 @@ class InfoWindowInterface {
   late AnimatedPositioned infoWindow;
 
   InfoWindowInterface() {
-    refresh();
+    //refresh();
+  }
+
+  void setCtx(BuildContext ctx) {
+    _ctx = ctx;
   }
 
   // variables to be displayed
@@ -134,7 +140,7 @@ class InfoWindowInterface {
                     Padding(
                       padding: EdgeInsets.fromLTRB(12, 6, 12, 6),
                       child: TextButton(
-                        child: Text("Confirm"),
+                        child: Text(AppLocalizations.of(_ctx)!.confirmButton),
                         style: TextButton.styleFrom(
                           primary: Colors.white,
                           backgroundColor: Colors.lightBlue,

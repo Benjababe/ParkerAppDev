@@ -1,0 +1,9 @@
+{
+  "bookmarksButton": "书签",
+  "confirmButton": "确认 ",
+  "lotsAvailableTxt": "可用地段 ",
+  "lotsTotalTxt": "总手数 ",
+  "searchButton": "搜索 ",
+  "searchPlaceholder": "搜索目的地",
+  "typeTxt": "类型 "
+}
