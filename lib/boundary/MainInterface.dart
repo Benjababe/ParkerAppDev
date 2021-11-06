@@ -45,7 +45,7 @@ class _MainMenuState extends State<MainMenu> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text("Parker App"),
+            Text(AppLocalizations.of(context)!.title),
             Padding(
               padding: EdgeInsets.all(100),
             ),
