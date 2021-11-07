@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:app/boundary/InfoWindowInterface.dart';
@@ -32,6 +33,7 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
 
   String _mapStyle = "";
   double _mapZoom = 16.5, _suggestionHeight = 0;
+  bool _locationPopup = false;
 
   List _suggestions = [];
 
@@ -47,10 +49,17 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
     // pass interface class to controller as it needs to modify it
     _cpMgr.setIWInterface(_iwInterface);
 
-    // check state update every 0.2s
-    // for infowindow interface updating
+    // refresh ui variable references every 200ms
     Timer.periodic(Duration(milliseconds: 200), (Timer t) {
       setState(() {});
+    });
+
+    // check location state every second
+    Timer.periodic(Duration(milliseconds: 1000), (Timer t) {
+      print("Checking location services...");
+      setState(() {
+        checkLocationEnabled();
+      });
     });
   }
 
@@ -248,6 +257,41 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
     LatLng pos = await _searchMgr.searchMap(_txtBoxController.text);
     await _cpMgr.addSearchMarker(pos);
     moveCamera(pos, animate: true);
+  }
+
+  void checkLocationEnabled() async {
+    Future<bool> locationEnabled = Geolocator.isLocationServiceEnabled();
+
+    // on future complete, check enabled status
+    locationEnabled.then((enabled) {
+      // only pops up if location is disabled and a popup doesn't already exist
+      if (!enabled && !_locationPopup) {
+        _locationPopup = true;
+        showDialog(
+          context: context,
+          // disables closing of dialog box through tapping outside of it
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            // WillPopScope disables use of back button to close dialog box
+            return WillPopScope(
+                onWillPop: () async => false,
+                child: AlertDialog(
+                  title: new Text(
+                      AppLocalizations.of(context)!.locationDialogTitle),
+                  content: new Text(
+                      AppLocalizations.of(context)!.locationDialogText),
+                  actions: <Widget>[],
+                ));
+          },
+        );
+      }
+
+      // hides popup if location is enabled and popup exists
+      else if (enabled && _locationPopup) {
+        Navigator.pop(context);
+        _locationPopup = false;
+      }
+    });
   }
 
   // pans camera to location "pos"

@@ -1,6 +1,8 @@
 {
   "bookmarksButton": "புக்மார்க்குகள் ",
   "confirmButton": "உறுதிப்படுத்தவும் ",
+  "locationDialogText": "இருப்பிடங்கள் இயக்கப்படவில்லை, பயன்பாட்டைத் தொடர முடியாது ",
+  "locationDialogTitle": "இடங்கள் பிரச்சினை",
   "lotsAvailableTxt": "நிறைய கிடைக்கிறது ",
   "lotsTotalTxt": "நிறைய மொத்தம் ",
   "searchButton": "தேடல் ",

@@ -1,6 +1,8 @@
 {
   "bookmarksButton": "Penanda Buku ",
   "confirmButton": "Sahkan ",
+  "locationDialogText": "Lokasi tidak didayakan, tidak boleh meneruskan aplikasi ",
+  "locationDialogTitle": "Isu lokasi ",
   "lotsAvailableTxt": "Banyak Tersedia",
   "lotsTotalTxt": "Banyak Jumlah ",
   "searchButton": "Cari",

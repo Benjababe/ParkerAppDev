@@ -1,6 +1,8 @@
 {
   "bookmarksButton": "书签",
   "confirmButton": "确认 ",
+  "locationDialogText": "地点未启用，无法继续申请 ",
+  "locationDialogTitle": "地点问题 ",
   "lotsAvailableTxt": "可用地段 ",
   "lotsTotalTxt": "总手数 ",
   "searchButton": "搜索 ",

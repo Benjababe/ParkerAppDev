@@ -1,6 +1,8 @@
 {
   "bookmarksButton": "Bookmarks",
   "confirmButton": "Confirm",
+  "locationDialogText": "Locations not enabled, cannot continue application",
+  "locationDialogTitle": "Locations Issue",
   "lotsAvailableTxt": "Lots Available",
   "lotsTotalTxt": "Lots Total",
   "searchButton": "Search",
