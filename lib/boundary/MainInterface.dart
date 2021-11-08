@@ -77,7 +77,7 @@ class _MainMenuState extends State<MainMenu> {
             ),*/
             ElevatedButton.icon(
               icon: Icon(Icons.settings, size: 16),
-              label: Text('Settings'),
+              label: Text(AppLocalizations.of(context)!.settingsButton),
               onPressed: () => navigateToSettings(),
             ),
           ],
@@ -104,13 +104,12 @@ class _MainMenuState extends State<MainMenu> {
     );
   }
 
-  dynamic navigateToSettings(){
-      Navigator.push(
+  dynamic navigateToSettings() {
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => SettingsInterface(),
       ),
     );
-
   }
 }

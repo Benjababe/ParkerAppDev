@@ -1,12 +1,20 @@
 {
+  "about": "关于 ",
   "bookmarksButton": "书签",
   "confirmButton": "确认 ",
+  "general": "一般",
+  "help": "帮助",
+  "howToUse": "如何使用该应用程序 ",
+  "language": "语 ",
   "locationDialogText": "地点未启用，无法继续申请 ",
   "locationDialogTitle": "地点问题 ",
   "lotsAvailableTxt": "可用地段 ",
   "lotsTotalTxt": "总手数 ",
+  "moreInformation": "更多信息 ",
   "searchButton": "搜索 ",
   "searchPlaceholder": "搜索目的地",
+  "settingsButton": "设置 ",
   "title": "Parker App (Chinese)",
-  "typeTxt": "类型 "
+  "typeTxt": "类型 ",
+  "version": "版本 "
 }

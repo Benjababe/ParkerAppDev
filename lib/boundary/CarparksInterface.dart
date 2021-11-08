@@ -37,6 +37,8 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
 
   List _suggestions = [];
 
+  late Timer _var, _locState;
+
   @override
   void initState() {
     super.initState();
@@ -50,17 +52,24 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
     _cpMgr.setIWInterface(_iwInterface);
 
     // refresh ui variable references every 200ms
-    Timer.periodic(Duration(milliseconds: 200), (Timer t) {
+    _var = Timer.periodic(Duration(milliseconds: 200), (Timer t) {
       setState(() {});
     });
 
     // check location state every second
-    Timer.periodic(Duration(milliseconds: 1000), (Timer t) {
+    _locState = Timer.periodic(Duration(milliseconds: 1000), (Timer t) {
       print("Checking location services...");
       setState(() {
         checkLocationEnabled();
       });
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _var.cancel();
+    _locState.cancel();
   }
 
   @override

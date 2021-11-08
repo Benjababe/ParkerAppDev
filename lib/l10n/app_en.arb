@@ -1,12 +1,20 @@
 {
+  "about": "About",
   "bookmarksButton": "Bookmarks",
   "confirmButton": "Confirm",
+  "general": "General",
+  "help": "Help",
+  "howToUse": "How to use the app",
+  "language": "Language",
   "locationDialogText": "Locations not enabled, cannot continue application",
   "locationDialogTitle": "Locations Issue",
   "lotsAvailableTxt": "Lots Available",
   "lotsTotalTxt": "Lots Total",
+  "moreInformation": "More Information",
   "searchButton": "Search",
   "searchPlaceholder": "Search Destination",
+  "settingsButton": "Settings",
   "title": "Parker App (EN)",
-  "typeTxt": "Type"
+  "typeTxt": "Type",
+  "version": "Version"
 }

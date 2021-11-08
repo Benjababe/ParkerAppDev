@@ -1,12 +1,20 @@
 {
+  "about": "Tentang ",
   "bookmarksButton": "Penanda Buku ",
   "confirmButton": "Sahkan ",
+  "general": "Umum ",
+  "help": "Tolong ",
+  "howToUse": "Cara menggunakan aplikasi ",
+  "language": "Bahasa ",
   "locationDialogText": "Lokasi tidak didayakan, tidak boleh meneruskan aplikasi ",
   "locationDialogTitle": "Isu lokasi ",
   "lotsAvailableTxt": "Banyak Tersedia",
   "lotsTotalTxt": "Banyak Jumlah ",
+  "moreInformation": "Maklumat lanjut",
   "searchButton": "Cari",
   "searchPlaceholder": "Cari Destinasi ",
+  "settingsButton": "Tetapan ",
   "title": "Parker App (Malay)",
-  "typeTxt": "Taip"
+  "typeTxt": "Taip",
+  "version": "Versi "
 }

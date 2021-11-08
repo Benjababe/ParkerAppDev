@@ -18,10 +18,9 @@ class SettingsInterface extends StatefulWidget {
 
 class _SettingsInterfaceState extends State<SettingsInterface> {
   static const keyLanguage = 'key-language';
-  
+
   @override
-  Widget build(BuildContext context) 
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -35,9 +34,8 @@ class _SettingsInterfaceState extends State<SettingsInterface> {
             Navigator.pop(context);
           },
         ),
-        title: const Text(
-          'Settings',
-          style: TextStyle(color:Colors.white) ),
+        title: Text(AppLocalizations.of(context)!.settingsButton,
+            style: TextStyle(color: Colors.white)),
       ),
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -45,7 +43,7 @@ class _SettingsInterfaceState extends State<SettingsInterface> {
           padding: EdgeInsets.all(24),
           children: [
             SettingsGroup(
-              title: 'General',
+              title: AppLocalizations.of(context)!.general,
               children: <Widget>[
                 buildLanguage(),
                 buildHelp(),
@@ -53,7 +51,7 @@ class _SettingsInterfaceState extends State<SettingsInterface> {
             ),
             SizedBox(height: 10),
             SettingsGroup(
-              title: 'More Information\n',
+              title: AppLocalizations.of(context)!.moreInformation + '\n',
               children: <Widget>[
                 buildAbout(),
               ],
@@ -63,40 +61,24 @@ class _SettingsInterfaceState extends State<SettingsInterface> {
       ),
     );
   }
+
   Widget buildAbout() => SimpleSettingsTile(
-    title: 'About',
-    subtitle: 'Version 1.0'
-  );
+      title: AppLocalizations.of(context)!.about,
+      subtitle: AppLocalizations.of(context)!.version + ' 1.0');
   Widget buildLanguage() => DropDownSettingsTile(
-    settingKey: keyLanguage,
-    title: 'Language',
-    subtitle: '',
-    selected: 1,
-    onChange: (value)
-    {
-
-    },
-    values: <int, String>{
-      1: "Default (English)",
-    },  
-  ); 
+        settingKey: keyLanguage,
+        title: AppLocalizations.of(context)!.language,
+        subtitle: '',
+        selected: 1,
+        onChange: (value) {},
+        values: <int, String>{
+          1: "Default (English)",
+        },
+      );
   Widget buildHelp() => SimpleSettingsTile(
-    title: 'Help (English)',
-    subtitle:'How to use the app',
-    onTap: () async => { await launch("https://www.youtube.com/watch?v=o4uXLVvNmw4") },
-  );
-
+        title: AppLocalizations.of(context)!.help + ' (English)',
+        subtitle: AppLocalizations.of(context)!.howToUse,
+        onTap: () async =>
+            {await launch("https://www.youtube.com/watch?v=o4uXLVvNmw4")},
+      );
 }
-
-
-
-
-
-
-
-
-
-
-  
-
-  
