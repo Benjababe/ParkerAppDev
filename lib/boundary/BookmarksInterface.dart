@@ -31,8 +31,7 @@ class _BookmarksInterfaceState extends State<BookmarksInterface>
             Navigator.pop(context);
           },
         ),
-        title: const Text(
-          'Bookmarks',
+        title: Text(AppLocalizations.of(context)!.bookmarksButton,
           style: TextStyle(color:Colors.white) ),
       ),
       backgroundColor: Colors.black,
