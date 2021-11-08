@@ -34,8 +34,8 @@ The project starts from the lib/main.dart file under its main() function. Try to
 - [x] 1.1.1. If succeeded, the user shall proceed to the next functionality (2).
 - [x] 1.1.2. If failed, the user shall be notified that the user will not be able to proceed to the next functionality (2).
 #### 1.2. The system must continuously verify that permission to access users’ location can be accessed.
-- [ ] 1.2.1 If the users’ location cannot be accessed at any point, the system must query the user for permission to access users’ location.
-- [ ] 1.2.1.1 System must halt all functionalities until users’ location can be accessed again.
+- [x] 1.2.1 If the users’ location cannot be accessed at any point, the system must query the user for permission to access users’ location.
+- [x] 1.2.1.1 System must halt all functionalities until users’ location can be accessed again.
 
 ### 2. Users must be able to enter the start and end points of their journeys.
 - [x] 2.1. The data type of entry must be a text of at least one character and less than 512characters.
