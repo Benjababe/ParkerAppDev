@@ -2,7 +2,7 @@ import 'package:app/boundary/BookmarksInterface.dart';
 import 'package:app/entity/Bookmarks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class BookmarksMgr implements BookmarksInterface {
+class BookmarksMgr  {
   late List<Bookmarks> bList;
   late SharedPreferences _prefs;
   //class constructor (composition of Bookmarks)

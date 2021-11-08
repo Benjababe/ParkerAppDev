@@ -1,4 +1,5 @@
 // external packages
+import 'package:app/boundary/BookmarksInterface.dart';
 import 'package:app/control/PermissionsMgr.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -67,7 +68,7 @@ class _MainMenuState extends State<MainMenu> {
             ElevatedButton.icon(
               icon: Icon(Icons.bookmark_outline, size: 16),
               label: Text(AppLocalizations.of(context)!.bookmarksButton),
-              onPressed: () {},
+              onPressed: () => navigateToBookmarks(),
             ),
             // Navigate to carparks near me
             /*ElevatedButton.icon(
@@ -109,6 +110,15 @@ class _MainMenuState extends State<MainMenu> {
       context,
       MaterialPageRoute(
         builder: (context) => SettingsInterface(),
+      ),
+    );
+  }
+
+  dynamic navigateToBookmarks() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BookmarksInterface(),
       ),
     );
   }
