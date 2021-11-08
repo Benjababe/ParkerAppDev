@@ -1,12 +1,17 @@
 // external packages
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 
 // local files
 import 'boundary/MainInterface.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-void main() => runApp(MyApp());
+
+Future main() async{
+  await Settings.init();
+  runApp(MyApp());
+}  
 
 class MyApp extends StatelessWidget {
   final ThemeData appTheme = ThemeData(

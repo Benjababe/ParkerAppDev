@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:app/boundary/CarparksInterface.dart';
 import 'package:app/boundary/CarparksNearMeInterface.dart';
+import 'package:app/boundary/SettingsInterface.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MainMenu extends StatefulWidget {
@@ -44,7 +45,7 @@ class _MainMenuState extends State<MainMenu> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+          children: [
             Text(AppLocalizations.of(context)!.title),
             Padding(
               padding: EdgeInsets.all(100),
@@ -69,10 +70,15 @@ class _MainMenuState extends State<MainMenu> {
               onPressed: () {},
             ),
             // Navigate to carparks near me
-            ElevatedButton.icon(
+            /*ElevatedButton.icon(
               icon: Icon(Icons.local_parking_outlined, size: 16),
               label: Text('Carparks Near Me'),
               onPressed: () => navigateToCarparksNearMe(),
+            ),*/
+            ElevatedButton.icon(
+              icon: Icon(Icons.settings, size: 16),
+              label: Text('Settings'),
+              onPressed: () => navigateToSettings(),
             ),
           ],
         ),
@@ -96,5 +102,15 @@ class _MainMenuState extends State<MainMenu> {
         builder: (context) => CarparksNearMeInterface(),
       ),
     );
+  }
+
+  dynamic navigateToSettings(){
+      Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SettingsInterface(),
+      ),
+    );
+
   }
 }
