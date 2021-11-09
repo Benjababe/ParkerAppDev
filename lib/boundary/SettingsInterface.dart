@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
@@ -79,6 +78,6 @@ class _SettingsInterfaceState extends State<SettingsInterface> {
         title: AppLocalizations.of(context)!.help + ' (English)',
         subtitle: AppLocalizations.of(context)!.howToUse,
         onTap: () async =>
-            {await launch("https://www.youtube.com/watch?v=o4uXLVvNmw4")},
+            {await launch("https://www.youtube.com/watch?v=4Y6pzrc-i8s")},
       );
 }
