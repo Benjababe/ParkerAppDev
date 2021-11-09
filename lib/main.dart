@@ -40,12 +40,16 @@ class MyApp extends StatelessWidget {
       title: 'Parker App',
       // set default global theme for the app
       theme: appTheme,
+      // hide debug banner on top right of debug install
+      debugShowCheckedModeBanner: false,
+      // what to apply localisation text to
       localizationsDelegates: [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      // list of supported languages
       supportedLocales: [
         Locale("en", ""),
         Locale("zh", "CN"),
