@@ -1,6 +1,7 @@
 {
   "about": "பற்றி ",
   "bookmarksButton": "புக்மார்க்குகள் ",
+  "cancelButton": "ரத்து செய் ",
   "confirmButton": "உறுதிப்படுத்தவும் ",
   "general": "பொது ",
   "help": "உதவி ",
@@ -11,10 +12,11 @@
   "lotsAvailableTxt": "நிறைய கிடைக்கிறது ",
   "lotsTotalTxt": "நிறைய மொத்தம் ",
   "moreInformation": "மேலும் தகவல்",
+  "noBookmarksTxt": "சாதனத்தில் புக்மார்க்குகள் எதுவும் சேமிக்கப்படவில்லை ",
   "searchButton": "தேடல் ",
   "searchPlaceholder": "இலக்கைத் தேடுங்கள் ",
   "settingsButton": "அமைப்புகள் ",
-  "settingsShowcase": "முதல் முறையாக பயன்பாட்டைப் பயன்படுத்தி, எங்கள் வீடியோ வழிகாட்டியைப் பார்க்க இங்கே தட்டவும்",
+  "settingsShowcase": "எங்கள் வீடியோ வழிகாட்டியைப் பார்க்க இங்கே தட்டவும்",
   "title": "Parker App (Tamil)",
   "typeTxt": "வகை ",
   "version": "பதிப்பு "

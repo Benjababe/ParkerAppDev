@@ -8,11 +8,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class InfoWindowInterface {
   late BuildContext _ctx;
   NavigateMgr navMgr = new NavigateMgr();
-  BookmarksMgr bkMgr = new BookmarksMgr();
+  BookmarksMgr _bkMgr = new BookmarksMgr();
 
   double _infoWindowPos = -200;
   String _infoWindowText = "", _infoWindowTitle = "", _cpNum = "";
-  bool _infoWindowBookmarked = false, _activeAvailable = true;
+  bool _activeAvailable = true;
   late AnimatedPositioned infoWindow;
 
   InfoWindowInterface() {
@@ -38,6 +38,10 @@ class InfoWindowInterface {
   void setCPNum(String cpNum) {
     _cpNum = cpNum;
     refresh();
+  }
+
+  void initBookmarks() {
+    _bkMgr.initBookmarks();
   }
 
   void showWindow() {
@@ -122,7 +126,7 @@ class InfoWindowInterface {
                     padding: EdgeInsets.all(0),
                     height: 24,
                     child: IconButton(
-                      icon: Icon((_infoWindowBookmarked)
+                      icon: Icon((_bkMgr.isBookmarked(_cpNum))
                           ? Icons.bookmark
                           : Icons.bookmark_border_outlined),
                       padding: EdgeInsets.only(
@@ -130,8 +134,7 @@ class InfoWindowInterface {
                       ),
                       color: null,
                       onPressed: () {
-                        bkMgr.bookmarkMarker(_cpNum);
-                        _infoWindowBookmarked = !_infoWindowBookmarked;
+                        _bkMgr.bookmarkMarker(_cpNum);
                       },
                     ),
                   ),

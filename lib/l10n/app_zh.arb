@@ -1,6 +1,7 @@
 {
   "about": "关于 ",
   "bookmarksButton": "书签",
+  "cancelButton": "取消",
   "confirmButton": "确认 ",
   "general": "一般",
   "help": "帮助",
@@ -11,10 +12,11 @@
   "lotsAvailableTxt": "可用地段 ",
   "lotsTotalTxt": "总手数 ",
   "moreInformation": "更多信息 ",
+  "noBookmarksTxt": "设备上没有保存书签 ",
   "searchButton": "搜索 ",
   "searchPlaceholder": "搜索目的地",
   "settingsButton": "设置 ",
-  "settingsShowcase": "首次使用该应用程序时，点击此处查看我们的视频指南 ",
+  "settingsShowcase": "点按此处查看我们的视频指南 ",
   "title": "Parker App (Chinese)",
   "typeTxt": "类型 ",
   "version": "版本 "

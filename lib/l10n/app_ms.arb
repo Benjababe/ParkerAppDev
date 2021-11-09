@@ -1,6 +1,7 @@
 {
   "about": "Tentang ",
   "bookmarksButton": "Penanda Buku ",
+  "cancelButton": "Batal ",
   "confirmButton": "Sahkan ",
   "general": "Umum ",
   "help": "Tolong ",
@@ -11,10 +12,11 @@
   "lotsAvailableTxt": "Banyak Tersedia",
   "lotsTotalTxt": "Banyak Jumlah ",
   "moreInformation": "Maklumat lanjut",
+  "noBookmarksTxt": "Tiada penanda halaman disimpan pada peranti ",
   "searchButton": "Cari",
   "searchPlaceholder": "Cari Destinasi ",
   "settingsButton": "Tetapan ",
-  "settingsShowcase": "Kali pertama menggunakan apl, ketik di sini untuk melihat panduan video kami ",
+  "settingsShowcase": "Ketik di sini untuk melihat panduan video kami ",
   "title": "Parker App (Malay)",
   "typeTxt": "Taip",
   "version": "Versi "

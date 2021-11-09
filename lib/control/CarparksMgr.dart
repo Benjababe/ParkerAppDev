@@ -9,11 +9,12 @@ import 'package:http/http.dart' as http;
 
 import 'package:app/boundary/InfoWindowInterface.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CarparksMgr {
   late int _range;
   late Map<String, Carpark> cpMap = new Map();
-  late BitmapDescriptor customIconFree, customIconFull;
+  late BitmapDescriptor customIconFree;
   late BuildContext _ctx;
   Set<Marker> _markers = {};
 
@@ -36,9 +37,14 @@ class CarparksMgr {
     return _markers;
   }
 
+  Future<Map> getCarparkLocations() async {
+    String s = await rootBundle.loadString("assets/carpark_static_data.json");
+    Map data = await json.decode(s);
+    return data;
+  }
+
   Future<void> readCarparkLocations() async {
     customIconFree = await getCustomIcon(true);
-    customIconFull = await getCustomIcon(false);
 
     String s = await rootBundle.loadString("assets/carpark_static_data.json");
     Map data = await json.decode(s);
@@ -85,6 +91,7 @@ class CarparksMgr {
       Marker(
         markerId: MarkerId("marker_search"),
         position: pos,
+        consumeTapEvents: true,
       ),
     );
   }
@@ -136,22 +143,33 @@ class CarparksMgr {
 
   // retrieves current location from gps
   Future<LatLng> getCurrentLocation() async {
-    Position pos = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    LatLng currentPos = new LatLng(pos.latitude, pos.longitude);
+    LatLng currentPos;
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    double? lat = prefs.getDouble("activeLat"),
+        lng = prefs.getDouble("activeLng");
+
+    await prefs.setDouble("activeLat", -1);
+    await prefs.setDouble("activeLng", -1);
+
+    // if not coming from bookmarks, use user location
+    if (lat == null || lng == null || lat == -1 || lng == -1) {
+      Position pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      currentPos = new LatLng(pos.latitude, pos.longitude);
+    }
+
+    // if coming from bookmarks, use memory location and plop a marker
+    else {
+      currentPos = new LatLng(lat, lng);
+      addSearchMarker(currentPos);
+    }
+
     return currentPos;
   }
 
-  //displaying available carparks within range
-  void displayCarparks(int _range) {}
-
-  //selecting carpark from the available ones
-  void selectCarparks(Carpark c) {}
-
-  //displaying information of selected carparks
-  void displayInfo(Carpark c) {}
-
+  // pass context from ui because of localisation
   void setCtx(BuildContext ctx) {
     _ctx = ctx;
   }

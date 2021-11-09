@@ -37,7 +37,7 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
 
   List _suggestions = [];
 
-  late Timer _var, _locState;
+  late Timer _varTimer, _locStateTimer;
 
   @override
   void initState() {
@@ -52,12 +52,12 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
     _cpMgr.setIWInterface(_iwInterface);
 
     // refresh ui variable references every 200ms
-    _var = Timer.periodic(Duration(milliseconds: 200), (Timer t) {
+    _varTimer = Timer.periodic(Duration(milliseconds: 200), (Timer t) {
       setState(() {});
     });
 
     // check location state every second
-    _locState = Timer.periodic(Duration(milliseconds: 1000), (Timer t) {
+    _locStateTimer = Timer.periodic(Duration(milliseconds: 1000), (Timer t) {
       print("Checking location services...");
       setState(() {
         checkLocationEnabled();
@@ -68,14 +68,16 @@ class _CarparksInterfaceState extends State<CarparksInterface> {
   @override
   void dispose() {
     super.dispose();
-    _var.cancel();
-    _locState.cancel();
+    // because timer still runs when context is popped
+    _varTimer.cancel();
+    _locStateTimer.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
     _cpMgr.setCtx(context);
     _iwInterface.setCtx(context);
+    _iwInterface.initBookmarks();
     _iwInterface.refresh();
 
     return Scaffold(

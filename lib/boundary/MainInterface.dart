@@ -1,16 +1,14 @@
 // external packages
-import 'package:app/boundary/BookmarksInterface.dart';
-import 'package:app/control/PermissionsMgr.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:showcaseview/showcaseview.dart';
 
-import 'package:permission_handler/permission_handler.dart';
 import 'package:app/boundary/CarparksInterface.dart';
 import 'package:app/boundary/CarparksNearMeInterface.dart';
 import 'package:app/boundary/SettingsInterface.dart';
+import 'package:app/boundary/BookmarksInterface.dart';
+import 'package:app/control/PermissionsMgr.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:showcaseview/showcaseview.dart';
 
 class MainMenu extends StatefulWidget {
   MainMenu({Key? key, required this.title}) : super(key: key);
@@ -21,7 +19,8 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuState extends State<MainMenu> {
-  PermissionsMgr permissionsMgr = new PermissionsMgr();
+  PermissionsMgr _permissionsMgr = new PermissionsMgr();
+  BookmarksInterface _bookmarks = new BookmarksInterface();
   late SharedPreferences _prefs;
 
   final GlobalKey _settingsKey = GlobalKey();
@@ -76,20 +75,20 @@ class _MainMenuState extends State<MainMenu> {
               icon: Icon(Icons.search, size: 16),
               label: Text(AppLocalizations.of(context)!.searchButton),
               onPressed: () async {
-                String error = await permissionsMgr.checkLocationService();
+                String error = await _permissionsMgr.checkLocationService();
                 // if no errors with location services
                 if (error == "")
                   navigateToCarparks();
                 // pops up error message if navigate function returns non null string
                 else {
-                  permissionsMgr.popupPermissions(context, error);
+                  _permissionsMgr.popupPermissions(context, error);
                 }
               },
             ),
             ElevatedButton.icon(
               icon: Icon(Icons.bookmark_outline, size: 16),
               label: Text(AppLocalizations.of(context)!.bookmarksButton),
-              onPressed: () => navigateToBookmarks(),
+              onPressed: () => openBookmarks(),
             ),
             Showcase(
                 key: _settingsKey,
@@ -132,12 +131,12 @@ class _MainMenuState extends State<MainMenu> {
     );
   }
 
-  dynamic navigateToBookmarks() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => BookmarksInterface(),
-      ),
+  dynamic openBookmarks() async {
+    AlertDialog dialog = await _bookmarks.generateBookmarksMenu(context);
+
+    showDialog(
+      builder: (_) => dialog,
+      context: context,
     );
   }
 }

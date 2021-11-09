@@ -1,6 +1,7 @@
 {
   "about": "About",
   "bookmarksButton": "Bookmarks",
+  "cancelButton": "Cancel",
   "confirmButton": "Confirm",
   "general": "General",
   "help": "Help",
@@ -11,10 +12,11 @@
   "lotsAvailableTxt": "Lots Available",
   "lotsTotalTxt": "Lots Total",
   "moreInformation": "More Information",
+  "noBookmarksTxt": "No bookmarks saved on device",
   "searchButton": "Search",
   "searchPlaceholder": "Search Destination",
   "settingsButton": "Settings",
-  "settingsShowcase": "First time using the app, tap here to see our video guide",
+  "settingsShowcase": "Tap here to see our video guide",
   "title": "Parker App (EN)",
   "typeTxt": "Type",
   "version": "Version"

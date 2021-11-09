@@ -1,10 +1,11 @@
-import 'package:app/boundary/BookmarksInterface.dart';
 import 'package:app/entity/Bookmarks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class BookmarksMgr  {
+class BookmarksMgr {
+  List<String> _bookmarks = [];
   late List<Bookmarks> bList;
   late SharedPreferences _prefs;
+
   //class constructor (composition of Bookmarks)
   BookmarksMgr();
 
@@ -13,19 +14,27 @@ class BookmarksMgr  {
     bList.add(b);
   }
 
-  void bookmarkMarker(String cpNum) async {
+  void initBookmarks() async {
     // retrieves bookmark list from storage
     _prefs = await SharedPreferences.getInstance();
-    List<String> bookmarks = _prefs.getStringList("bookmarks")!;
+    _bookmarks = _prefs.getStringList("bookmarks")!;
+  }
 
+  bool isBookmarked(String cpNum) {
+    return _bookmarks.contains(cpNum);
+  }
+
+  Future<bool> bookmarkMarker(String cpNum) async {
     // toggles bookmark from list
-    if (!bookmarks.contains(cpNum))
-      bookmarks.add(cpNum);
+    if (!_bookmarks.contains(cpNum))
+      _bookmarks.add(cpNum);
     else
-      bookmarks.remove(cpNum);
+      _bookmarks.remove(cpNum);
 
     // stores bookmark list to storage
-    _prefs.setStringList("bookmarks", bookmarks);
+    _prefs.setStringList("bookmarks", _bookmarks);
+
+    return isBookmarked(cpNum);
   }
 
   //display all bookmarks information
