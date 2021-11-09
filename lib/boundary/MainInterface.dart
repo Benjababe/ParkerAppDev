@@ -10,6 +10,7 @@ import 'package:app/boundary/CarparksInterface.dart';
 import 'package:app/boundary/CarparksNearMeInterface.dart';
 import 'package:app/boundary/SettingsInterface.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 class MainMenu extends StatefulWidget {
   MainMenu({Key? key, required this.title}) : super(key: key);
@@ -23,10 +24,13 @@ class _MainMenuState extends State<MainMenu> {
   PermissionsMgr permissionsMgr = new PermissionsMgr();
   late SharedPreferences _prefs;
 
+  final GlobalKey _settingsKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
     initBookmarks();
+    showcaseSettings();
   }
 
   // set bookmarks to an empty list, prevent it from being null when first referenced.
@@ -36,6 +40,23 @@ class _MainMenuState extends State<MainMenu> {
     if (bookmarks == null) {
       bookmarks = [];
       await _prefs.setStringList("bookmarks", bookmarks);
+    }
+  }
+
+  // showcase video guide on first launch
+  void showcaseSettings() async {
+    _prefs = await SharedPreferences.getInstance();
+    bool? showcase = _prefs.getBool("showcaseSettings");
+
+    if (showcase == null || showcase == false) {
+      WidgetsBinding.instance!.addPostFrameCallback(
+        (_) => ShowCaseWidget.of(context)!.startShowCase(
+          [
+            _settingsKey,
+          ],
+        ),
+      );
+      await _prefs.setBool("showcaseSettings", true);
     }
   }
 
@@ -70,17 +91,14 @@ class _MainMenuState extends State<MainMenu> {
               label: Text(AppLocalizations.of(context)!.bookmarksButton),
               onPressed: () => navigateToBookmarks(),
             ),
-            // Navigate to carparks near me
-            /*ElevatedButton.icon(
-              icon: Icon(Icons.local_parking_outlined, size: 16),
-              label: Text('Carparks Near Me'),
-              onPressed: () => navigateToCarparksNearMe(),
-            ),*/
-            ElevatedButton.icon(
-              icon: Icon(Icons.settings, size: 16),
-              label: Text(AppLocalizations.of(context)!.settingsButton),
-              onPressed: () => navigateToSettings(),
-            ),
+            Showcase(
+                key: _settingsKey,
+                child: ElevatedButton.icon(
+                  icon: Icon(Icons.settings, size: 16),
+                  label: Text(AppLocalizations.of(context)!.settingsButton),
+                  onPressed: () => navigateToSettings(),
+                ),
+                description: AppLocalizations.of(context)!.settingsShowcase),
           ],
         ),
       ),

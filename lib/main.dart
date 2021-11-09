@@ -2,16 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 // local files
 import 'boundary/MainInterface.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
-Future main() async{
+Future main() async {
   await Settings.init();
   runApp(MyApp());
-}  
+}
 
 class MyApp extends StatelessWidget {
   final ThemeData appTheme = ThemeData(
@@ -52,7 +52,13 @@ class MyApp extends StatelessWidget {
         Locale("ms", "SG"),
         Locale("ta", "SG")
       ],
-      home: MainMenu(title: "Parker"),
+      home: ShowCaseWidget(
+        builder: Builder(
+          builder: (context) {
+            return MainMenu(title: "Parker");
+          },
+        ),
+      ),
     );
   }
 }
