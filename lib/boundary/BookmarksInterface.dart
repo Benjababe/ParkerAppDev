@@ -40,6 +40,10 @@ class BookmarksInterface {
             // when bookmark is pressed, store latlng which will be used in carparkinterface
             _prefs.setDouble("activeLat", carpark["lat"]);
             _prefs.setDouble("activeLng", carpark["lng"]);
+
+            // closes alertdialog because it doesn't update to the latest bookmarks automatically
+            Navigator.pop(context);
+
             // and open carparkinterface.
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => CarparksInterface()));
