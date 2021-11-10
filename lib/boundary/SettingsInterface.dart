@@ -69,7 +69,7 @@ class _SettingsInterfaceState extends State<SettingsInterface> {
         selected: 1,
         onChange: (value) {},
         values: <int, String>{
-          1: "Default (English)",
+          1: "Default (" + AppLocalizations.of(context)!.currLanguage + ")",
         },
       );
   Widget buildHelp() => SimpleSettingsTile(
